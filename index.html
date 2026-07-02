@@ -1,0 +1,4451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FarmCast AI - Climate Resilience Platform</title>
+  <!-- Google Fonts for premium sans-serif typography -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- Material Symbols Rounded for smooth agritech iconography -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <style>
+    /* ----------------------------------------------------
+       DESIGN SYSTEM & BRAND VARIABLE DEFINITIONS
+       Based on the Crimson, Cream, Pale Green, and leafy Green palette
+       plus a harmonizing Water/Sky Blue.
+       ---------------------------------------------------- */
+    :root {
+      --color-cream: #FAFCEB;          /* Main App Background */
+      --color-card: #FFFFFF;           /* Card Backgrounds */
+      --color-green-primary: #619553;  /* Brand primary green */
+      --color-green-dark: #224316;     /* Contrast text and branding headers */
+      --color-green-light: #EBF4E5;    /* Light container backdrops */
+      --color-green-pale: #C5E1B7;     /* Secondary details */
+      --color-red: #9C1D18;            /* High Risk / Alerts / Emergency Mode */
+      --color-blue: #2E75B6;           /* Water / Rain / Citations / AI bubs */
+      --color-yellow: #D97706;         /* Warning / Moderate Risk */
+      --color-gray-text: #64748B;      /* Secondary text */
+      --color-border: #E2E8F0;         /* Soft borders */
+      
+      --font-primary: 'Outfit', 'Noto Sans', sans-serif;
+      --shadow-sm: 0 2px 8px rgba(34, 67, 22, 0.04);
+      --shadow-md: 0 8px 24px rgba(34, 67, 22, 0.06);
+      --shadow-lg: 0 16px 36px rgba(34, 67, 22, 0.1);
+      
+      --transition-default: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Dark Mode Overrides */
+    body.dark-mode {
+      --color-cream: #121910;
+      --color-card: #1C2419;
+      --color-green-primary: #76B466;
+      --color-green-dark: #FAFCEB;
+      --color-green-light: #242E20;
+      --color-green-pale: #3D4F37;
+      --color-border: #2D3A29;
+      --color-gray-text: #94A3B8;
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font-primary);
+      background-color: #E2E8F0; /* Outside desktop background */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: var(--color-green-dark);
+      transition: background-color var(--transition-default);
+      padding: 20px;
+    }
+
+    /* ----------------------------------------------------
+       DESKTOP DEVICE WRAPPER & SHELL
+       Renders as a premium physical phone on desktop
+       ---------------------------------------------------- */
+    .desktop-wrapper {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      max-width: 800px;
+    }
+
+    /* Floating Navigation Panel on Left (Desktop only) */
+    .prototype-sidebar {
+      position: absolute;
+      left: -270px;
+      top: 20px;
+      width: 240px;
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--color-border);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 800px;
+      overflow-y: auto;
+    }
+
+    .prototype-sidebar h3 {
+      font-size: 16px;
+      margin-bottom: 12px;
+      border-bottom: 2px solid var(--color-green-light);
+      padding-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sidebar-btn {
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: none;
+      background: var(--color-cream);
+      color: var(--color-green-dark);
+      font-family: var(--font-primary);
+      font-size: 13px;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .sidebar-btn:hover {
+      background: var(--color-green-light);
+      transform: translateX(4px);
+    }
+
+    .sidebar-btn.active {
+      background: var(--color-green-primary);
+      color: white;
+    }
+
+    .phone-bezel {
+      position: relative;
+      width: 390px;
+      height: 844px; /* Real iPhone Aspect Ratio */
+      background: #0D160B;
+      border: 12px solid #222c1e;
+      border-radius: 50px;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: border-color var(--transition-default);
+    }
+
+    /* Status Bar & Notch */
+    .phone-notch {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 150px;
+      height: 30px;
+      background: #0D160B;
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
+      z-index: 1000;
+    }
+
+    .status-bar {
+      height: 40px;
+      background: var(--color-cream);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding: 0 28px 6px 28px;
+      font-size: 13px;
+      font-weight: 600;
+      z-index: 999;
+      color: var(--color-green-dark);
+      transition: background-color var(--transition-default), color var(--transition-default);
+    }
+
+    .status-icons {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .status-icons span {
+      font-size: 16px !important;
+    }
+
+    /* App Screen Viewport */
+    .app-screen-container {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      background-color: var(--color-cream);
+      position: relative;
+      transition: background-color var(--transition-default);
+    }
+
+    /* Bottom Navigation Bar */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 76px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 0 10px 14px 10px;
+      z-index: 998;
+      transition: background var(--transition-default), border-color var(--transition-default);
+    }
+
+    body.dark-mode .bottom-nav {
+      background: rgba(28, 36, 25, 0.85);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-gray-text);
+      text-decoration: none;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      width: 60px;
+      height: 48px;
+      border-radius: 12px;
+      transition: color var(--transition-default);
+    }
+
+    .nav-item.active {
+      color: var(--color-green-primary);
+    }
+
+    .nav-item span {
+      font-size: 24px;
+      margin-bottom: 2px;
+      transition: transform 0.2s ease;
+    }
+
+    .nav-item:active span {
+      transform: scale(0.85);
+    }
+
+    .phone-home-indicator {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 5px;
+      background: var(--color-green-dark);
+      border-radius: 10px;
+      z-index: 1001;
+      opacity: 0.3;
+    }
+
+    /* Responsive Adjustments: Go Fullscreen on actual Mobile */
+    @media (max-width: 900px) {
+      .prototype-sidebar {
+        display: none; /* Hide sidebar list on mobile/tablet viewports */
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        background-color: var(--color-cream);
+        padding: 0;
+      }
+      .desktop-wrapper {
+        max-width: 100%;
+        height: 100vh;
+      }
+      .phone-bezel {
+        width: 100vw;
+        height: 100vh;
+        border: none;
+        border-radius: 0;
+      }
+      .phone-notch {
+        display: none;
+      }
+      .status-bar {
+        padding: 12px 18px 6px 18px;
+        height: 44px;
+      }
+      .bottom-nav {
+        padding-bottom: 18px;
+        height: 80px;
+      }
+    }
+
+    /* ----------------------------------------------------
+       REUSABLE DESIGN COMPONENTS
+       ---------------------------------------------------- */
+    .screen {
+      display: none;
+      width: 100%;
+      height: 100%;
+      padding: 16px 20px 90px 20px; /* Large bottom padding to prevent nav bar overlaps */
+      overflow-y: auto;
+      scrollbar-width: none;
+      animation: screenFade 250ms ease-out;
+    }
+
+    .screen::-webkit-scrollbar {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes screenFade {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: var(--color-card);
+      border-radius: 22px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--color-border);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background-color var(--transition-default);
+    }
+
+    .card:active {
+      transform: scale(0.985);
+      box-shadow: none;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-primary);
+      font-weight: 600;
+      font-size: 15px;
+      padding: 14px 24px;
+      border-radius: 18px;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      gap: 8px;
+      transition: background-color var(--transition-default), transform 0.1s ease, color var(--transition-default);
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-primary {
+      background-color: var(--color-green-primary);
+      color: #FFFFFF;
+    }
+
+    .btn-primary:hover {
+      background-color: #528045;
+    }
+
+    .btn-secondary {
+      background-color: var(--color-green-light);
+      color: var(--color-green-dark);
+    }
+
+    .btn-danger {
+      background-color: var(--color-red);
+      color: #FFFFFF;
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      border: 2px solid var(--color-green-primary);
+      color: var(--color-green-primary);
+    }
+
+    /* Typography Defaults */
+    h1, h2, h3, h4 {
+      font-weight: 700;
+      color: var(--color-green-dark);
+      margin-bottom: 6px;
+    }
+    
+    p {
+      color: var(--color-gray-text);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 8px 0 14px 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Badges / Status Chips */
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 600;
+      gap: 4px;
+    }
+
+    .pill-red {
+      background-color: #FEE2E2;
+      color: var(--color-red);
+    }
+    body.dark-mode .pill-red {
+      background-color: #450A0A;
+      color: #FCA5A5;
+    }
+
+    .pill-yellow {
+      background-color: #FEF3C7;
+      color: var(--color-yellow);
+    }
+    body.dark-mode .pill-yellow {
+      background-color: #451A03;
+      color: #FCD34D;
+    }
+
+    .pill-green {
+      background-color: #DCFCE7;
+      color: var(--color-green-primary);
+    }
+    body.dark-mode .pill-green {
+      background-color: #064E3B;
+      color: #86EFAC;
+    }
+
+    .pill-blue {
+      background-color: #DBEAFE;
+      color: var(--color-blue);
+    }
+    body.dark-mode .pill-blue {
+      background-color: #172554;
+      color: #93C5FD;
+    }
+
+    /* ----------------------------------------------------
+       SCREENS SPECIFIC STYLING
+       ---------------------------------------------------- */
+    
+    /* Screen 1: Splash */
+    #screen-splash {
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 40px 24px;
+      background: linear-gradient(180deg, rgba(34, 67, 22, 0.4) 0%, rgba(250, 252, 235, 1) 75%), 
+                  url('agri_fields_bg.png') center/cover no-repeat;
+      z-index: 10;
+    }
+
+    #screen-splash.active {
+      display: flex;
+    }
+    
+    body.dark-mode #screen-splash {
+      background: linear-gradient(180deg, rgba(18, 25, 16, 0.4) 0%, rgba(18, 25, 16, 1) 75%), 
+                  url('agri_fields_bg.png') center/cover no-repeat;
+    }
+
+    .logo-container {
+      margin-top: 100px;
+      text-align: center;
+    }
+
+    .logo-circle {
+      width: 90px;
+      height: 90px;
+      background: var(--color-card);
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px auto;
+      box-shadow: var(--shadow-md);
+    }
+
+    .logo-circle span {
+      font-size: 52px;
+      color: var(--color-green-primary);
+    }
+
+    .splash-title {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--color-green-dark);
+      letter-spacing: -0.5px;
+    }
+
+    .splash-tagline {
+      font-size: 15px;
+      color: var(--color-gray-text);
+      max-width: 240px;
+      margin: 10px auto;
+      font-weight: 500;
+    }
+
+    .splash-bottom {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Loading Spinner */
+    .loader-ring {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      border: 3px solid rgba(97, 149, 83, 0.2);
+      border-radius: 50%;
+      border-top-color: var(--color-green-primary);
+      animation: spin 1s ease-in-out infinite;
+      margin: 20px auto;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Language Switcher Bar */
+    .lang-bar {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .lang-btn {
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid var(--color-border);
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--color-green-dark);
+      transition: background var(--transition-default);
+    }
+
+    body.dark-mode .lang-btn {
+      background: rgba(28, 36, 25, 0.8);
+    }
+
+    .lang-btn.active {
+      background: var(--color-green-primary);
+      color: white;
+      border-color: var(--color-green-primary);
+    }
+
+    /* Screen 2: Onboarding */
+    .onboarding-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      justify-content: space-between;
+    }
+
+    .onboarding-slides {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      width: 100%;
+    }
+
+    .onboarding-slide {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      width: 100%;
+      animation: fadeIn 300ms ease;
+    }
+
+    .onboarding-slide.active {
+      display: flex;
+    }
+
+    .onboarding-illustration {
+      width: 220px;
+      height: 220px;
+      background: var(--color-green-light);
+      border-radius: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 30px;
+      position: relative;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .onboarding-illustration span {
+      font-size: 96px;
+      color: var(--color-green-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      width: 100%;
+      height: 100%;
+    }
+
+    .onboarding-slide h2 {
+      font-size: 24px;
+      margin-bottom: 12px;
+    }
+
+    .onboarding-slide p {
+      font-size: 15px;
+      max-width: 280px;
+    }
+
+    .onboarding-dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-green-pale);
+      transition: width var(--transition-default), background var(--transition-default);
+    }
+
+    .dot.active {
+      width: 20px;
+      border-radius: 4px;
+      background: var(--color-green-primary);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* Screen 3: Login */
+    .login-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 100%;
+      padding-top: 40px;
+    }
+
+    .input-group {
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .input-group label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-green-dark);
+      padding-left: 4px;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid var(--color-border);
+      font-family: var(--font-primary);
+      font-size: 15px;
+      background: var(--color-card);
+      color: var(--color-green-dark);
+      outline: none;
+      transition: border-color var(--transition-default);
+    }
+
+    .input-field:focus {
+      border-color: var(--color-green-primary);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 20px 0;
+      font-size: 12px;
+      color: var(--color-gray-text);
+      font-weight: 500;
+    }
+
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .divider:not(:empty)::before { margin-right: .5em; }
+    .divider:not(:empty)::after { margin-left: .5em; }
+
+    /* Screen 4: Home Dashboard */
+    .home-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+    }
+
+    .user-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--color-green-pale);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      border: 2px solid white;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .greeting-text h2 {
+      font-size: 18px;
+      margin-bottom: 2px;
+    }
+
+    .location-bar {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: var(--color-gray-text);
+      font-weight: 500;
+    }
+
+    .location-bar span {
+      font-size: 14px;
+      color: var(--color-green-primary);
+    }
+
+    .notification-btn {
+      width: 44px;
+      height: 44px;
+      background: var(--color-card);
+      border-radius: 14px;
+      border: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .notification-btn::after {
+      content: '';
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 8px;
+      height: 8px;
+      background: var(--color-red);
+      border-radius: 50%;
+      border: 1px solid var(--color-card);
+    }
+
+    /* Quick Shortcuts Grid on Home Dashboard */
+    .quick-actions-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .action-grid-item {
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      border-radius: 18px;
+      padding: 12px 6px;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s ease, background-color var(--transition-default);
+    }
+
+    .action-grid-item:active {
+      transform: scale(0.95);
+      background-color: var(--color-green-light);
+    }
+
+    .action-grid-item span {
+      font-size: 28px;
+      margin-bottom: 6px;
+    }
+
+    .action-grid-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--color-green-dark);
+      line-height: 1.2;
+    }
+
+    /* Outlook circular gauge */
+    .outlook-card {
+      background: linear-gradient(135deg, var(--color-green-light) 0%, #FAFCEB 100%);
+      border: 1px solid var(--color-green-pale);
+    }
+    
+    body.dark-mode .outlook-card {
+      background: linear-gradient(135deg, #1C2419 0%, #121910 100%);
+    }
+
+    .gauge-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 16px 0;
+    }
+
+    .gauge-circle {
+      position: relative;
+      width: 100px;
+      height: 100px;
+    }
+
+    .gauge-circle svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .gauge-circle circle {
+      fill: none;
+      stroke-width: 10;
+    }
+
+    .gauge-bg {
+      stroke: var(--color-border);
+    }
+
+    .gauge-val {
+      stroke: var(--color-yellow);
+      stroke-linecap: round;
+      transition: stroke-dashoffset 1s ease-out;
+    }
+
+    .gauge-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .gauge-number {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--color-green-dark);
+    }
+
+    .gauge-label {
+      font-size: 9px;
+      color: var(--color-gray-text);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 700;
+    }
+
+    .risk-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .risk-item {
+      background: var(--color-card);
+      padding: 10px;
+      border-radius: 14px;
+      border: 1px solid var(--color-border);
+      text-align: center;
+    }
+
+    .risk-item-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--color-gray-text);
+      margin-bottom: 4px;
+    }
+
+    /* Actions List */
+    .action-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .action-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .action-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .action-text {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-green-dark);
+    }
+
+    .action-chevron {
+      color: var(--color-gray-text);
+      font-size: 18px;
+    }
+
+    /* Weather Summary Row */
+    .weather-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .weather-box {
+      background: var(--color-card);
+      padding: 12px 6px;
+      border-radius: 16px;
+      border: 1px solid var(--color-border);
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .weather-box span {
+      font-size: 24px;
+      color: var(--color-blue);
+      margin-bottom: 4px;
+    }
+
+    .weather-val {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-green-dark);
+    }
+
+    .weather-lbl {
+      font-size: 10px;
+      color: var(--color-gray-text);
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    /* Floating action button (FAB) for AI assistant */
+    .fab-button {
+      position: absolute;
+      bottom: 90px;
+      right: 20px;
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: var(--color-green-primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 24px rgba(97, 149, 83, 0.4);
+      cursor: pointer;
+      z-index: 997;
+      border: none;
+      transition: transform 0.2s ease, background-color var(--transition-default);
+    }
+
+    .fab-button:active {
+      transform: scale(0.9);
+    }
+
+    .fab-button span {
+      font-size: 28px;
+    }
+
+    /* Screen 5: AI Advisor Chat */
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      justify-content: space-between;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      scrollbar-width: none;
+    }
+
+    .chat-messages::-webkit-scrollbar {
+      display: none;
+    }
+
+    .msg {
+      max-width: 80%;
+      padding: 12px 16px;
+      border-radius: 18px;
+      font-size: 14px;
+      line-height: 1.5;
+      animation: msgPop 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes msgPop {
+      from { opacity: 0; transform: translateY(8px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .msg-received {
+      background: var(--color-card);
+      color: var(--color-green-dark);
+      border-bottom-left-radius: 4px;
+      align-self: flex-start;
+      border: 1px solid var(--color-border);
+    }
+
+    .msg-sent {
+      background: var(--color-blue);
+      color: white;
+      border-bottom-right-radius: 4px;
+      align-self: flex-end;
+    }
+
+    .chat-citation {
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px dashed rgba(255,255,255,0.2);
+      font-size: 11px;
+      opacity: 0.9;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .msg-received .chat-citation {
+      border-top-color: var(--color-border);
+      color: var(--color-blue);
+    }
+
+    .chat-input-area {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--color-border);
+      background: var(--color-cream);
+      transition: background-color var(--transition-default);
+    }
+
+    .suggested-prompts {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding: 4px 0;
+    }
+
+    .suggested-prompts::-webkit-scrollbar {
+      display: none;
+    }
+
+    .prompt-chip {
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      padding: 8px 14px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+      cursor: pointer;
+      color: var(--color-green-dark);
+      transition: background var(--transition-default), border-color var(--transition-default);
+    }
+
+    .prompt-chip:active {
+      background: var(--color-green-light);
+    }
+
+    .input-bar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      position: relative;
+    }
+
+    .chat-text-input {
+      flex: 1;
+      padding: 14px 16px;
+      border-radius: 24px;
+      border: 1px solid var(--color-border);
+      font-family: var(--font-primary);
+      font-size: 14px;
+      background: var(--color-card);
+      color: var(--color-green-dark);
+      outline: none;
+      transition: border-color var(--transition-default);
+    }
+
+    .chat-text-input:focus {
+      border-color: var(--color-green-primary);
+    }
+
+    .chat-act-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: none;
+      transition: background var(--transition-default);
+    }
+
+    .voice-record-btn {
+      background: var(--color-green-light);
+      color: var(--color-green-primary);
+    }
+
+    .voice-recording-active {
+      background: var(--color-red);
+      color: white;
+      animation: pulse 1.2s infinite;
+    }
+
+    .send-msg-btn {
+      background: var(--color-green-primary);
+      color: white;
+    }
+
+    /* Waveform Animation for Voice Input */
+    .waveform-overlay {
+      display: none;
+      position: absolute;
+      left: 12px;
+      right: 110px;
+      top: 0;
+      bottom: 0;
+      background: var(--color-card);
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      z-index: 10;
+    }
+
+    .wave-bar {
+      width: 3px;
+      height: 6px;
+      background: var(--color-green-primary);
+      border-radius: 10px;
+      animation: wave 1.2s ease-in-out infinite alternate;
+    }
+
+    .wave-bar:nth-child(2) { animation-delay: 0.15s; }
+    .wave-bar:nth-child(3) { animation-delay: 0.3s; }
+    .wave-bar:nth-child(4) { animation-delay: 0.45s; }
+    .wave-bar:nth-child(5) { animation-delay: 0.6s; }
+    .wave-bar:nth-child(6) { animation-delay: 0.75s; }
+
+    @keyframes wave {
+      0% { height: 6px; }
+      100% { height: 26px; }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    /* Screen 6: Crop Calendar */
+    .calendar-strip {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .cal-day {
+      width: 46px;
+      height: 58px;
+      border-radius: 14px;
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color var(--transition-default), border-color var(--transition-default);
+    }
+
+    .cal-day.active {
+      background: var(--color-green-primary);
+      color: white;
+      border-color: var(--color-green-primary);
+    }
+
+    .cal-day-name {
+      font-size: 10px;
+      font-weight: 500;
+      opacity: 0.8;
+      margin-bottom: 4px;
+    }
+
+    .cal-day-num {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    /* Timeline Cards */
+    .timeline-container {
+      position: relative;
+      padding-left: 20px;
+    }
+
+    .timeline-container::before {
+      content: '';
+      position: absolute;
+      left: 6px;
+      top: 8px;
+      bottom: 8px;
+      width: 2px;
+      background: var(--color-border);
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .timeline-node {
+      position: absolute;
+      left: -20px;
+      top: 4px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--color-card);
+      border: 3px solid var(--color-green-primary);
+      z-index: 1;
+      transition: background-color var(--transition-default);
+    }
+
+    .timeline-node.completed {
+      background: var(--color-green-primary);
+    }
+
+    .timeline-card {
+      margin-bottom: 0;
+      padding: 14px;
+    }
+
+    .timeline-time {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--color-gray-text);
+      margin-bottom: 4px;
+    }
+
+    .timeline-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    /* Screen 7: Climate Risk Dashboard */
+    .radar-container {
+      width: 100%;
+      height: 220px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    /* Accordion Panels */
+    .accordion-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      padding: 4px 0;
+    }
+
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+      font-size: 13px;
+      color: var(--color-gray-text);
+      margin-top: 0px;
+    }
+
+    .accordion-card.open .accordion-content {
+      max-height: 200px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--color-border);
+    }
+
+    .accordion-card.open .accordion-chevron {
+      transform: rotate(180deg);
+    }
+
+    .accordion-chevron {
+      transition: transform 0.3s ease;
+      color: var(--color-gray-text);
+    }
+
+    /* Screen 8: Disease Diagnosis */
+    .camera-viewport {
+      position: relative;
+      width: 100%;
+      height: 240px;
+      background: #000;
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .camera-viewport video,
+    .camera-viewport canvas,
+    .camera-viewport .leaf-preview-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .camera-viewport .camera-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: rgba(255,255,255,0.5);
+      font-size: 13px;
+      z-index: 1;
+    }
+
+    .camera-placeholder span.material-icons-round {
+      font-size: 48px;
+      color: rgba(255,255,255,0.3);
+    }
+
+    .diag-btn-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .diag-btn-row .btn {
+      flex: 1;
+      font-size: 13px;
+      padding: 12px 8px;
+    }
+
+    .btn-outline {
+      background: var(--color-card);
+      color: var(--color-green-primary);
+      border: 2px solid var(--color-green-primary);
+      border-radius: 16px;
+      font-family: var(--font-primary);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-default);
+    }
+    .btn-outline:hover {
+      background: var(--color-green-light);
+    }
+
+    .leaf-graphic {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Scanning animation bar */
+    .scan-line {
+      display: none;
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(180deg, rgba(118, 180, 102, 0.1) 0%, rgba(118, 180, 102, 1) 50%, rgba(118, 180, 102, 0.1) 100%);
+      box-shadow: 0 0 15px #76B466;
+      animation: scanAnim 2.5s linear infinite;
+      z-index: 5;
+    }
+
+    @keyframes scanAnim {
+      0% { top: 0; }
+      50% { top: 234px; }
+      100% { top: 0; }
+    }
+
+    .scan-reticle {
+      position: absolute;
+      border: 2px solid rgba(255,255,255,0.4);
+      width: 160px;
+      height: 160px;
+      border-radius: 24px;
+      z-index: 4;
+    }
+
+    .scan-reticle::before {
+      content: '';
+      position: absolute;
+      top: -2px; left: -2px;
+      width: 20px; height: 20px;
+      border-top: 4px solid var(--color-green-primary);
+      border-left: 4px solid var(--color-green-primary);
+      border-top-left-radius: 8px;
+    }
+    .scan-reticle::after {
+      content: '';
+      position: absolute;
+      bottom: -2px; right: -2px;
+      width: 20px; height: 20px;
+      border-bottom: 4px solid var(--color-green-primary);
+      border-right: 4px solid var(--color-green-primary);
+      border-bottom-right-radius: 8px;
+    }
+
+    .scan-status-overlay {
+      display: none;
+      position: absolute;
+      background: rgba(0,0,0,0.75);
+      color: white;
+      padding: 10px 18px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      z-index: 6;
+      backdrop-filter: blur(4px);
+    }
+
+    .diag-results {
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+
+    /* Typing indicator dots */
+    .typing-dots {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 0;
+    }
+    .typing-dots span {
+      width: 8px;
+      height: 8px;
+      background: var(--color-green-primary);
+      border-radius: 50%;
+      animation: typingBounce 1.4s infinite ease-in-out;
+    }
+    .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typingBounce {
+      0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Screen 9: Climate Simulator */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .sim-stat-box {
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid var(--color-border);
+      text-align: center;
+      background: var(--color-card);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .sim-stat-val {
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .chart-container {
+      width: 100%;
+      height: 120px;
+      margin: 10px 0;
+    }
+
+    /* Screen 10: Community Map */
+    .map-container {
+      width: 100%;
+      height: 380px;
+      border-radius: 24px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid var(--color-border);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .map-svg {
+      width: 100%;
+      height: 100%;
+      background-color: #E2ECE9;
+      transition: background-color var(--transition-default);
+    }
+    
+    body.dark-mode .map-svg {
+      background-color: #1F2E2A;
+    }
+
+    .map-pin {
+      cursor: pointer;
+      transform-origin: 50% 100%;
+      transition: transform 0.2s ease;
+    }
+
+    .map-pin:hover, .map-pin.active {
+      transform: scale(1.25);
+    }
+
+    .map-bottom-card {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      right: 12px;
+      z-index: 10;
+      margin-bottom: 0;
+      display: none;
+      animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .map-overlay-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 10;
+      background: var(--color-card);
+      border-radius: 12px;
+      border: 1px solid var(--color-border);
+      padding: 8px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: var(--shadow-sm);
+      color: var(--color-green-dark);
+      transition: background-color var(--transition-default);
+    }
+
+    /* Screen 12: Emergency Mode */
+    .emergency-pulse-btn {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background: var(--color-red);
+      color: white;
+      font-size: 26px;
+      font-weight: 800;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 30px auto;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 0 0 0 rgba(156, 29, 24, 0.5);
+      animation: emergencyPulse 1.8s infinite;
+      gap: 6px;
+    }
+
+    .emergency-pulse-btn span {
+      font-size: 40px;
+    }
+
+    @keyframes emergencyPulse {
+      0% { box-shadow: 0 0 0 0 rgba(156, 29, 24, 0.7); }
+      70% { box-shadow: 0 0 0 25px rgba(156, 29, 24, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(156, 29, 24, 0); }
+    }
+
+    .sos-flashing {
+      animation: sosFlash 0.5s infinite alternate;
+    }
+
+    @keyframes sosFlash {
+      0% { background-color: var(--color-cream); }
+      100% { background-color: #F8D7DA; }
+    }
+
+    .sos-countdown-banner {
+      display: none;
+      background: var(--color-red);
+      color: white;
+      padding: 14px;
+      border-radius: 16px;
+      text-align: center;
+      font-weight: 700;
+      margin-bottom: 16px;
+      font-size: 14px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    /* Screen 13: Impact Dashboard */
+    .badge-scroll {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 6px 0;
+      scrollbar-width: none;
+    }
+
+    .badge-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .badge-card {
+      flex: 0 0 90px;
+      background: var(--color-card);
+      border-radius: 18px;
+      border: 1px solid var(--color-border);
+      padding: 12px 6px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      transition: background-color var(--transition-default);
+    }
+
+    .badge-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--color-green-light);
+      color: var(--color-green-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 6px auto;
+      font-size: 22px;
+    }
+
+    .badge-card.unlocked .badge-icon {
+      background: #FEF3C7;
+      color: #D97706;
+    }
+
+    .badge-name {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--color-green-dark);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .streak-container {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%);
+      border: 1px solid #FFD8A8;
+    }
+    
+    body.dark-mode .streak-container {
+      background: linear-gradient(135deg, #2D1A0A 0%, #1A0D03 100%);
+      border-color: #4A270B;
+    }
+
+    .streak-flame {
+      font-size: 36px;
+      color: #F97316;
+      animation: flamePulse 1.5s infinite alternate;
+    }
+
+    @keyframes flamePulse {
+      from { transform: scale(1); filter: drop-shadow(0 0 2px rgba(249, 115, 22, 0.4)); }
+      to { transform: scale(1.15); filter: drop-shadow(0 0 8px rgba(249, 115, 22, 0.8)); }
+    }
+
+    /* Form control formatting */
+    .form-switch {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: var(--color-border);
+      transition: .3s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px; width: 18px;
+      left: 3px; bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--color-green-primary);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    /* Modal / Bottom Sheet Dialogs - PROPERLY CONTAINED INSIDE BEZEL */
+    .bottom-sheet {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: var(--color-card);
+      border-top-left-radius: 30px;
+      border-top-right-radius: 30px;
+      padding: 24px;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(100%);
+      transition: transform 350ms cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1002;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .bottom-sheet.open {
+      transform: translateY(0);
+    }
+
+    .bottom-sheet-backdrop {
+      display: none;
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1001;
+      animation: fadeIn 0.2s ease;
+      border-radius: 38px;
+    }
+
+    .bottom-sheet-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    /* Utilities */
+    .d-none {
+      display: none !important;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<div class="desktop-wrapper">
+
+  <!-- FLOATING SIDEBAR NAVIGATION LIST (FOR JUDGES / DEMOING) -->
+  <div class="prototype-sidebar">
+    <h3>
+      <span class="material-icons-round" style="color:var(--color-green-primary);">splitscreen</span>
+      Screens Navigator
+    </h3>
+    <button class="sidebar-btn active" id="side-splash" onclick="clickSidebarScreen('screen-splash', 'side-splash')">1. Splash Screen</button>
+    <button class="sidebar-btn" id="side-onboard" onclick="clickSidebarScreen('screen-onboarding', 'side-onboard')">2. Onboarding slides</button>
+    <button class="sidebar-btn" id="side-login" onclick="clickSidebarScreen('screen-login', 'side-login')">3. Login Verification</button>
+    <button class="sidebar-btn" id="side-home" onclick="clickSidebarScreen('screen-home', 'side-home')">4. Home Dashboard</button>
+    <button class="sidebar-btn" id="side-advisor" onclick="clickSidebarScreen('screen-advisor', 'side-advisor')">5. AI Farm Advisor</button>
+    <button class="sidebar-btn" id="side-calendar" onclick="clickSidebarScreen('screen-calendar', 'side-calendar')">6. Crop Calendar</button>
+    <button class="sidebar-btn" id="side-risk" onclick="clickSidebarScreen('screen-risk', 'side-risk')">7. Climate Risk Meter</button>
+    <button class="sidebar-btn" id="side-diagnosis" onclick="clickSidebarScreen('screen-diagnosis', 'side-diagnosis')">8. Disease Diagnosis</button>
+    <button class="sidebar-btn" id="side-simulator" onclick="clickSidebarScreen('screen-simulator', 'side-simulator')">9. Climate Simulator</button>
+    <button class="sidebar-btn" id="side-community" onclick="clickSidebarScreen('screen-community', 'side-community')">10. Community Map</button>
+    <button class="sidebar-btn" id="side-village" onclick="clickSidebarScreen('screen-village', 'side-village')">11. Village Dashboard</button>
+    <button class="sidebar-btn" id="side-emergency" onclick="clickSidebarScreen('screen-emergency', 'side-emergency')">12. Emergency SOS Mode</button>
+    <button class="sidebar-btn" id="side-impact" onclick="clickSidebarScreen('screen-impact', 'side-impact')">13. Impact Dashboard</button>
+    <button class="sidebar-btn" id="side-profile" onclick="clickSidebarScreen('screen-profile', 'side-profile')">14. Farmer Profile</button>
+  </div>
+  
+  <!-- PHONE BEZEL OUTER FRAME -->
+  <div class="phone-bezel" id="phone-bezel-outer">
+    
+    <!-- NOTCH -->
+    <div class="phone-notch"></div>
+    
+    <!-- DEVICE STATUS BAR -->
+    <div class="status-bar">
+      <div class="status-time" id="status-time">09:41</div>
+      <div class="status-icons">
+        <span class="material-icons-round">signal_cellular_4_bar</span>
+        <span class="material-icons-round">wifi</span>
+        <span class="material-icons-round">battery_full</span>
+      </div>
+    </div>
+    
+    <!-- APP CONTAINER FOR ALL 14 SCREENS -->
+    <div class="app-screen-container" id="screen-viewport">
+      
+      <!-- ----------------------------------------------------
+           SCREEN 1: SPLASH SCREEN
+           ---------------------------------------------------- -->
+      <div class="screen active" id="screen-splash">
+        <div class="logo-container">
+          <div class="logo-circle">
+            <span class="material-icons-round">wb_sunny</span>
+          </div>
+          <h1 class="splash-title">FarmCast AI</h1>
+          <p class="splash-tagline" data-i18n="splash_tagline">Turning Forecasts into Field Decisions</p>
+        </div>
+        
+        <div class="loader-ring" id="splash-loader"></div>
+        
+        <div class="splash-bottom d-none" id="splash-controls">
+          <div class="lang-bar">
+            <button class="lang-btn active" onclick="setLanguage('en')">English</button>
+            <button class="lang-btn" onclick="setLanguage('hi')">हिंदी</button>
+            <button class="lang-btn" onclick="setLanguage('kn')">ಕನ್ನಡ</button>
+          </div>
+          <button class="btn btn-primary" onclick="showScreen('screen-onboarding')" data-i18n="get_started">Get Started</button>
+        </div>
+      </div>
+      
+      <!-- ----------------------------------------------------
+           SCREEN 2: ONBOARDING SCREENS
+           ---------------------------------------------------- -->
+      <div class="screen" id="screen-onboarding">
+        <div class="onboarding-container">
+          <div class="onboarding-slides">
+            
+            <!-- Slide 1 -->
+            <div class="onboarding-slide active" id="onboard-slide-0">
+              <div class="onboarding-illustration">
+                <span class="material-icons-round">thunderstorm</span>
+              </div>
+              <h2 data-i18n="onboard_1_title">Climate Challenges</h2>
+              <p data-i18n="onboard_1_desc">Climate is changing. Your decisions should too.</p>
+            </div>
+            
+            <!-- Slide 2 -->
+            <div class="onboarding-slide" id="onboard-slide-1">
+              <div class="onboarding-illustration">
+                <span class="material-icons-round">psychology</span>
+              </div>
+              <h2 data-i18n="onboard_2_title">AI Recommendations</h2>
+              <p data-i18n="onboard_2_desc">Receive personalized farming advice based on climate data.</p>
+            </div>
+            
+            <!-- Slide 3 -->
+            <div class="onboarding-slide" id="onboard-slide-2">
+              <div class="onboarding-illustration">
+                <span class="material-icons-round">groups</span>
+              </div>
+              <h2 data-i18n="onboard_3_title">Community Intelligence</h2>
+              <p data-i18n="onboard_3_desc">Stay informed through nearby farmer reports.</p>
+            </div>
+            
+          </div>
+          
+          <div class="onboarding-footer">
+            <div class="onboarding-dots">
+              <div class="dot active" id="onboard-dot-0"></div>
+              <div class="dot" id="onboard-dot-1"></div>
+              <div class="dot" id="onboard-dot-2"></div>
+            </div>
+            <button class="btn btn-primary" id="onboard-next-btn" onclick="nextOnboardingSlide()" data-i18n="continue">Continue</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- ----------------------------------------------------
+           SCREEN 3: LOGIN
+           ---------------------------------------------------- -->
+      <div class="screen" id="screen-login">
+        <div class="login-container">
+          <div class="text-center" style="margin-bottom: 30px;">
+            <span class="material-icons-round" style="font-size: 64px; color: var(--color-green-primary);">lock_open</span>
+            <h2 data-i18n="login_title" style="margin-top: 10px;">Verify Phone</h2>
+            <p data-i18n="login_subtitle">Enter your mobile number to get started</p>
+          </div>
+          
+          <div id="phone-entry-block">
+            <div class="input-group">
+              <label for="farmer-phone" data-i18n="phone_number">Phone Number</label>
+              <input type="tel" id="farmer-phone" class="input-field" placeholder="+91 98765 43210" value="+91 94480 12345">
+            </div>
+            <button class="btn btn-primary" onclick="requestOTP()" data-i18n="get_otp">Get OTP</button>
+          </div>
+          
+          <div id="otp-entry-block" class="d-none">
+            <div class="input-group">
+              <label for="farmer-otp" data-i18n="enter_otp">Enter 4-Digit OTP</label>
+              <input type="number" id="farmer-otp" class="input-field text-center" style="letter-spacing: 12px; font-size: 22px; font-weight: 700;" placeholder="0000" maxlength="4">
+            </div>
+            <button class="btn btn-primary" onclick="verifyOTP()" data-i18n="verify_login">Verify & Login</button>
+          </div>
+          
+          <div class="divider" data-i18n="or">OR</div>
+          
+          <button class="btn btn-secondary" onclick="simulateGoogleLogin()" style="margin-bottom: 12px;">
+            <svg style="width:18px;height:18px;" viewBox="0 0 24 24"><path fill="currentColor" d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.114-5.187 4.114-3.524 0-6.386-2.862-6.386-6.386 0-3.524 2.862-6.386 6.386-6.386 1.63 0 3.117.618 4.254 1.63l3.07-3.07C19.263 2.505 15.986 1.2 12.24 1.2 6.138 1.2 1.2 6.138 1.2 1.2c6.138 0 11.04 4.938 11.04 11.04s-4.938 11.04-11.04 11.04c-6.38 0-11.04-4.49-11.04-11.04 0-.747.08-1.464.223-2.155H12.24z"/></svg>
+            <span data-i18n="google_login">Continue with Google</span>
+          </button>
+          <button class="btn btn-outline" onclick="loginGuest()" data-i18n="guest_mode">Explore as Guest</button>
+        </div>
+      </div>
+      
+      <!-- ----------------------------------------------------
+           SCREEN 4: HOME DASHBOARD
+           ---------------------------------------------------- -->
+      <div class="screen" id="screen-home">
+        <div class="home-header">
+          <div class="user-profile" onclick="showScreen('screen-profile')">
+            <div class="user-avatar">🌾</div>
+            <div class="greeting-text">
+              <h2 data-i18n="greeting">Good Morning, Ramesh</h2>
+              <div class="location-bar">
+                <span class="material-icons-round">location_on</span>
+                <span data-i18n="location" id="user-location-display">Mandya, Karnataka</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="notification-btn" onclick="triggerAlertBottomsheet()">
+            <span class="material-icons-round" style="color:var(--color-green-primary); font-size:22px;">notifications</span>
+          </div>
+        </div>
+        
+        <!-- QUICK NAVIGATION SHORTCUTS FOR FARMERS -->
+        <div class="quick-actions-grid">
+          <div class="action-grid-item" onclick="showScreen('screen-diagnosis')">
+            <span class="material-icons-round" style="color:var(--color-green-primary);">photo_camera</span>
+            <div class="action-grid-label" data-i18n="scan_leaf">Scan Leaf</div>
+          </div>
+          <div class="action-grid-item" onclick="showScreen('screen-risk')">
+            <span class="material-icons-round" style="color:var(--color-yellow);">speed</span>
+            <div class="action-grid-label" data-i18n="risk_dash_title">Risks Meter</div>
+          </div>
+          <div class="action-grid-item" onclick="showScreen('screen-simulator')">
+            <span class="material-icons-round" style="color:var(--color-blue);">science</span>
+            <div class="action-grid-label" data-i18n="sim_title">Simulator</div>
+          </div>
+          <div class="action-grid-item" onclick="showScreen('screen-village')">
+            <span class="material-icons-round" style="color:var(--color-green-primary);">holiday_village</span>
+            <div class="action-grid-label" data-i18n="village_dash_title">Village Info</div>
+          </div>
+          <div class="action-grid-item" onclick="showScreen('screen-impact')">
+            <span class="material-icons-round" style="color:var(--color-green-primary);">analytics</span>
+            <div class="action-grid-label" data-i18n="impact_title">Impact</div>
+          </div>
+          <div class="action-grid-item" onclick="showScreen('screen-emergency')" style="border-color: #FCA5A5; background: #FFF5F5;">
+            <span class="material-icons-round" style="color:var(--color-red);">emergency</span>
+            <div class="action-grid-label" style="color:var(--color-red);" data-i18n="emergency_title">SOS Mode</div>
+          </div>
+        </div>
+        
+        <!-- Today's Farm Outlook Card -->
+        <div class="card outlook-card">
+          <h3 data-i18n="outlook_title">Today's Farm Outlook</h3>
+          <p style="font-size:12px; margin-bottom: 8px;" data-i18n="updated_time">Updated 10m ago</p>
+          
+          <div class="gauge-container">
+            <div class="gauge-circle">
+              <svg>
+                <circle class="gauge-bg" cx="50" cy="50" r="40"></circle>
+                <circle class="gauge-val" id="risk-gauge-ring" cx="50" cy="50" r="40" stroke-dasharray="251.2" stroke-dashoffset="95"></circle>
+              </svg>
+              <div class="gauge-text">
+                <div class="gauge-number">62%</div>
+                <div class="gauge-label" data-i18n="risk_label">Moderate</div>
+              </div>
+            </div>
+            
+            <div style="flex: 1; padding-left: 20px;">
+              <h4 data-i18n="overall_risk">Overall Climate Risk</h4>
+              <p data-i18n="risk_desc">Crop safety requires partial adjustments today.</p>
+            </div>
+          </div>
+          
+          <div class="risk-grid">
+            <div class="risk-item" onclick="showScreen('screen-risk')">
+              <div class="risk-item-label" data-i18n="rain_risk">Rain Risk</div>
+              <span class="pill pill-red">73% High</span>
+            </div>
+            <div class="risk-item" onclick="showScreen('screen-risk')">
+              <div class="risk-item-label" data-i18n="heat_stress">Heat Stress</div>
+              <span class="pill pill-yellow">48% Mod</span>
+            </div>
+            <div class="risk-item" onclick="showScreen('screen-risk')">
+              <div class="risk-item-label" data-i18n="water_stress">Water Stress</div>
+              <span class="pill pill-blue">61% High</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Recommended Actions Card -->
+        <div class="section-title">
+          <span data-i18n="recommended_actions">Recommended Actions</span>
+          <span class="pill pill-green" style="font-size:10px;">3 Active</span>
+        </div>
+        
+        <div class="card" style="padding: 10px 16px;">
+          <!-- Action 1 -->
+          <div class="action-row" onclick="showScreen('screen-calendar')">
+            <div class="action-icon" style="background:#DBEAFE; color:#2E75B6;">
+              <span class="material-icons-round">opacity</span>
+            </div>
+            <div class="action-text" data-i18n="action_1">Delay irrigation by 2 days</div>
+            <span class="material-icons-round action-chevron">chevron_right</span>
+          </div>
+          <!-- Action 2 -->
+          <div class="action-row" onclick="showScreen('screen-calendar')">
+            <div class="action-icon" style="background:#EBF4E5; color:#619553;">
+              <span class="material-icons-round">agriculture</span>
+            </div>
+            <div class="action-text" data-i18n="action_2">Harvest tomatoes before Friday</div>
+            <span class="material-icons-round action-chevron">chevron_right</span>
+          </div>
+          <!-- Action 3 -->
+          <div class="action-row" onclick="showScreen('screen-calendar')">
+            <div class="action-icon" style="background:#FEF3C7; color:#D97706;">
+              <span class="material-icons-round">warning_amber</span>
+            </div>
+            <div class="action-text" data-i18n="action_3">Avoid pesticide spraying tomorrow</div>
+            <span class="material-icons-round action-chevron">chevron_right</span>
+          </div>
+        </div>
+        
+        <!-- Community Alert Banner -->
+        <div class="card" style="background:#FFF1F2; border-color:#FECDD3; display:flex; gap:12px; align-items:center; cursor:pointer;" onclick="showScreen('screen-community')">
+          <span class="material-icons-round" style="color:var(--color-red); font-size: 28px;">gpp_maybe</span>
+          <div>
+            <h4 style="color:var(--color-red); margin-bottom: 2px;" data-i18n="community_alert_title">Community Warning</h4>
+            <p style="color:#9C1D18; font-size: 13px;" data-i18n="community_alert_desc">Nearby farmers reported Fall Armyworm outbreak.</p>
+          </div>
+        </div>
+        
+        <!-- Weather Summary Section -->
+        <div class="section-title" data-i18n="weather_summary">Weather Summary</div>
+        <div class="weather-grid">
+          <div class="weather-box">
+            <span class="material-icons-round">thermostat</span>
+            <div class="weather-val">31°C</div>
+            <div class="weather-lbl" data-i18n="temp">Temp</div>
+          </div>
+          <div class="weather-box">
+            <span class="material-icons-round">water_drop</span>
+            <div class="weather-val">78%</div>
+            <div class="weather-lbl" data-i18n="humidity">Humidity</div>
+          </div>
+          <div class="weather-box">
+            <span class="material-icons-round">air</span>
+            <div class="weather-val">14km/h</div>
+            <div class="weather-lbl" data-i18n="wind">Wind</div>
+          </div>
+          <div class="weather-box">
+            <span class="material-icons-round">umbrella</span>
+            <div class="weather-val">82%</div>
+            <div class="weather-lbl" data-i18n="rain_prob">Rain Prob</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- ----------------------------------------------------
+           SCREEN 5: AI FARM ADVISOR (CHAT)
+           ---------------------------------------------------- -->
+      <div class="screen" id="screen-advisor">
+        <div class="chat-container">
+          <div class="home-header" style="margin-bottom: 12px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="material-icons-round" style="color:var(--color-green-primary); font-size:32px;">smart_toy</span>
+              <div>
+                <h3 data-i18n="advisor_header_title" style="margin-bottom:0;">AI Farm Advisor</h3>
+                <p data-i18n="advisor_header_desc" style="font-size:11px;">Your agronomy assistant</p>
+              </div>
+            </div>
+            <button class="notification-btn" style="border:none;" onclick="showScreen('screen-home')">
+              <span class="material-icons-round">close</span>
+            </button>
+          </div>
+          
+          <div class="chat-messages" id="chat-messages-box">
+            <div class="msg msg-received">
+              <span data-i18n="chat_welcome">Namaskara Ramesh! I've analyzed Mandya's rain warnings. How can I help you protect your crops today?</span>
+            </div>
+          </div>
+          
+          <div class="chat-input-area">
+            <div class="suggested-prompts">
+              <div class="prompt-chip" onclick="sendSuggestedChat('prompt_1')" data-i18n="prompt_1">Will tomorrow's rainfall damage flowering tomato?</div>
+              <div class="prompt-chip" onclick="sendSuggestedChat('prompt_2')" data-i18n="prompt_2">Should I irrigate today?</div>
+              <div class="prompt-chip" onclick="sendSuggestedChat('prompt_3')" data-i18n="prompt_3">Pesticide spray recommendations</div>
+            </div>
+            
+            <div class="input-bar">
+              <!-- Waveform overlay during voice recording -->
+              <div class="waveform-overlay" id="voice-waveform">
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+              </div>
+              
+              <input type="text" id="chat-input-field" class="chat-text-input" placeholder="Ask anything in Kannada, Hindi or English..." onkeypress="handleChatKey(event)">
+              
+              <!-- Image Upload button -> scanner redirection -->
+              <button class="chat-act-btn voice-record-btn" onclick="showScreen('screen-diagnosis')">
+                <span class="material-icons-round">photo_camera</span>
+              </button>
+              
+              <button class="chat-act-btn voice-record-btn" id="voice-record-btn" onclick="toggleVoiceRecording()">
+                <span class="material-icons-round">mic</span>
+              </button>
+              <button class="chat-act-btn send-msg-btn" onclick="sendUserMessage()">
+                <span class="material-icons-round">send</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- ----------------------------------------------------
+           SCREEN 6: CROP CALENDAR
+           ---------------------------------------------------- -->
+      <div class="screen" id="screen-calendar">
+        <h2 data-i18n="calendar_title">Crop Calendar</h2>
+        <p data-i18n="calendar_subtitle" style="margin-bottom:14px;">Smart task organizer for your farm</p>
+        
+        <div class="calendar-strip">
+          <div class="cal-day" onclick="selectCalendarDay(this)">
+            <span class="cal-day-name">Mon</span><span class="cal-day-num">3</span>
+          </div>
+          <div class="cal-day active" onclick="selectCalendarDay(this)">
+            <span class="cal-day-name">Tue</span><span class="cal-day-num">4</span>
+          </div>
+          <div class="cal-day" onclick="selectCalendarDay(this)">
+            <span class="cal-day-name">Wed</span><span class="cal-day-num">5</span>
+          </div>
+          <div class="cal-day" onclick="selectCalendarDay(this)">
+            <span class="cal-day-name">Thu</span><span class="cal-day-num">6</span>
+          </div>
+          <div class="cal-day" onclick="selectCalendarDay(this)">
+            <span class="cal-day-name">Fri</span><span class="cal-day-num">7</span>
+          </div>
+          <div class="cal-day" onclick="selectCalendarDay(this)">
+            <span class="cal-day-name">Sat</span><span class="cal-day-num">8</span>
+          </div>
+        </div>
+        
+        <!-- Timeline scheduler -->
+        <div class="timeline-container" id="calendar-timeline">
+          <!-- Item 1 -->
+          <div class="timeline-item">
+            <div class="timeline-node completed"></div>
+            <div class="card timeline-card">
+              <div class="timeline-time">08:00 AM</div>
+              <div class="timeline-title" data-i18n="cal_task_1">Watering: Delay Irrigation</div>
+              <p data-i18n="cal_task_1_desc" style="font-size:12px;">High rainfall expected. Automated gate closed.</p>
+              <span class="pill pill-blue" style="margin-top:6px; font-size:10px;">Postponed</span>
+            </div>
+          </div>
+          <!-- Item 2 -->
+          <div class="timeline-item">
+            <div class="timeline-node"></div>
+            <div class="card timeline-card">
+              <div class="timeline-time">11:30 AM</div>
+              <div class="timeline-title" data-i18n="cal_task_2">Foliar Nutrient Spraying</div>
+              <p data-i18n="cal_task_2_desc" style="font-size:12px;">Apply Calcium Boron to tomato flowers to prevent drop.</p>
+              <span class="pill pill-yellow" style="margin-top:6px; font-size:10px;">Scheduled</span>
+            </div>
+          </div>
+          <!-- Item 3 -->
+          <div class="timeline-item">
+            <div class="timeline-node"></div>
+            <div class="card timeline-card">
+              <div class="timeline-time">04:00 PM</div>
+              <div class="timeline-title" data-i18n="cal_task_3">Disease Risk Inspection</div>
+              <p data-i18n="cal_task_3_desc" style="font-size:12px;">Inspect lower tomato leaves for brown blight spots.</p>
+              <span class="pill pill-green" style="margin-top:6px; font-size:10px;">Critical Check</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Harvest Window Card -->
+        <div class="card" style="background:linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%); border-color:#FDE68A; margin-top:20px; display:flex; align-items:center; gap:12px;">
+          <span class="material-icons-round" style="color:var(--color-yellow); font-size:32px;">shopping_basket</span>
+          <div>
+            <h4 style="color:#92400E; margin-bottom:2px;" data-i18n="harvest_window_title">Best Tomato Harvest Window</h4>
+            <p style="color:#B45309; font-size:12px;" data-i18n="harvest_window_desc">June 12 - June 15. Expected yield optimization: +15%.</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- ----------------------------------------------------
+           SCREEN 7: CLIMATE RISK DASHBOARD
+           ---------------------------------------------------- -->
+      <div class="screen" id="screen-risk">
+        <h2 data-i18n="risk_dash_title">Climate Risks</h2>
+        <p data-i18n="risk_dash_subtitle" style="margin-bottom:14px;">Scientific risk analysis for crop type: Tomato</p>
+        
+        <div class="card">
+          <!-- Radar Chart Visualizer (SVG) -->
+          <div class="radar-container">
+            <svg viewBox="0 0 220 220" width="100%" height="100%">
+              <!-- Outer hexagon grid -->
+              <polygon points="110,20 188,65 188,155 110,200 32,155 32,65" fill="none" stroke="var(--color-border)" stroke-width="1"></polygon>
+              <polygon points="110,50 162,80 162,140 110,170 58,140 58,80" fill="none" stroke="var(--color-border)" stroke-width="0.8" stroke-dasharray="3,3"></polygon>
+              <polygon points="110,80 136,95 136,125 110,140 84,125 84,95" fill="none" stroke="var(--color-border)" stroke-width="0.8" stroke-dasharray="3,3"></polygon>
+              
+              <!-- Axes lines -->
+              <line x1="110" y1="20" x2="110" y2="200" stroke="var(--color-border)" stroke-width="0.8"></line>
+              <line x1="32" y1="65" x2="188" y2="155" stroke="var(--color-border)" stroke-width="0.8"></line>
+              <line x1="32" y1="155" x2="188" y2="65" stroke="var(--color-border)" stroke-width="0.8"></line>
+              
+              <!-- Data labels -->
+              <text x="110" y="15" text-anchor="middle" font-size="9" font-weight="700" fill="var(--color-green-dark)">Rain (73%)</text>
+              <text x="200" y="65" text-anchor="start" font-size="9" font-weight="700" fill="var(--color-green-dark)">Heat (48%)</text>
+              <text x="200" y="160" text-anchor="start" font-size="9" font-weight="700" fill="var(--color-green-dark)">Pests (32%)</text>
+              <text x="110" y="214" text-anchor="middle" font-size="9" font-weight="700" fill="var(--color-green-dark)">Water (61%)</text>
+              <text x="20" y="160" text-anchor="end" font-size="9" font-weight="700" fill="var(--color-green-dark)">Flood (40%)</text>
+              <text x="20" y="65" text-anchor="end" font-size="9" font-weight="700" fill="var(--color-green-dark)">Disease (45%)</text>
+              
+              <!-- Radar shape -->
+              <polygon points="110,50 150,85 138,128 110,158 75,130 68,90" fill="rgba(118, 180, 102, 0.4)" stroke="var(--color-green-primary)" stroke-width="2.5"></polygon>
+              
+              <!-- Radar node dots -->
+              <circle cx="110" cy="50" r="4" fill="var(--color-green-primary)"></circle>
+              <circle cx="150" cy="85" r="4" fill="var(--color-green-primary)"></circle>
+              <circle cx="138" cy="128" r="4" fill="var(--color-green-primary)"></circle>
+              <circle cx="110" cy="158" r="4" fill="var(--color-green-primary)"></circle>
+              <circle cx="75" cy="130" r="4" fill="var(--color-green-primary)"></circle>
+              <circle cx="68" cy="90" r="4" fill="var(--color-green-primary)"></circle>
+            </svg>
+          </div>
+        </div>
+        
+        <!-- Accordion details list -->
+        <div class="accordion-card card" onclick="toggleAccordion(this)">
+          <div class="accordion-header">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="material-icons-round" style="color:var(--color-red);">umbrella</span>
+              <h4 style="margin:0;" data-i18n="risk_item_1">Heavy Rainfall Risk</h4>
+            </div>
+            <span class="material-icons-round accordion-chevron">expand_more</span>
+          </div>
+          <div class="accordion-content" data-i18n="risk_item_1_detail">
+            73% risk of flower damage and crop rot due to excess water logging. Recommendation: Clear field drains immediately and spray foliar calcium to boost root strength.
+          </div>
+        </div>
+        
+        <div class="accordion-card card" onclick="toggleAccordion(this)">
+          <div class="accordion-header">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="material-icons-round" style="color:var(--color-blue);">opacity</span>
+              <h4 style="margin:0;" data-i18n="risk_item_2">Water Scarcity & Stress</h4>
+            </div>
+            <span class="material-icons-round accordion-chevron">expand_more</span>
+          </div>
+          <div class="accordion-content" data-i18n="risk_item_2_detail">
+            61% risk of soil dry-out. Switch to drip irrigation. Schedule irrigation cycle post 6:00 PM to reduce heat evaporation.
+          </div>
+        </div>
+        
+        <div class="accordion-card card" onclick="toggleAccordion(this)">
+          <div class="accordion-header">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="material-icons-round" style="color:var(--color-yellow);">thermostat</span>
+              <h4 style="margin:0;" data-i18n="risk_item_3">Heatwave Stress</h4>
+            </div>
+            <span class="material-icons-round accordion-chevron">expand_more</span>
+          </div>
+          <div class="accordion-content" data-i18n="risk_item_3_detail">
+            48% risk of pollen sterility. Keep soil mulched with residue straw to cool down root temperatures.
+          </div>
+        </div>
+      </div>
+      
+      <!-- ----------------------------------------------------
+           SCREEN 8: DISEASE DIAGNOSIS
+           ---------------------------------------------------- -->
+      <div class="screen" id="screen-diagnosis">
+        <h2 data-i18n="diag_title">Crop Disease Diagnosis</h2>
+        <p data-i18n="diag_subtitle" style="margin-bottom:14px;">Instant leaf analysis using camera diagnostics</p>
+        
+        <div class="camera-viewport" id="diag-viewport">
+          <div class="scan-line" id="leaf-scan-laser"></div>
+          <div class="scan-reticle"></div>
+          <div class="scan-status-overlay" id="scan-loading-txt" data-i18n="scanning_status">SCANNING LEAF...</div>
+          
+          <!-- Camera Feed -->
+          <video id="leaf-camera-feed" autoplay playsinline muted style="display:none;"></video>
+          <!-- Captured Frame Canvas -->
+          <canvas id="leaf-capture-canvas" style="display:none;"></canvas>
+          <!-- Uploaded Image Preview -->
+          <img id="leaf-preview-img" class="leaf-preview-img" style="display:none;" alt="Leaf preview">
+          <!-- Hidden File Input -->
+          <input type="file" id="leaf-file-input" accept="image/*" capture="environment" style="display:none;" onchange="handleLeafUpload(event)">
+          
+          <!-- Default Placeholder -->
+          <div class="camera-placeholder" id="diag-placeholder">
+            <span class="material-icons-round">photo_camera</span>
+            <span data-i18n="diag_cam_hint">Open camera or upload a leaf photo</span>
+          </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="diag-btn-row">
+          <button class="btn btn-primary" id="diag-camera-btn" onclick="startLeafCamera()">
+            <span class="material-icons-round" style="font-size:18px; vertical-align:middle; margin-right:4px;">videocam</span>
+            <span data-i18n="diag_open_cam">Open Camera</span>
+          </button>
+          <button class="btn btn-outline" id="diag-upload-btn" onclick="document.getElementById('leaf-file-input').click()">
+            <span class="material-icons-round" style="font-size:18px; vertical-align:middle; margin-right:4px;">upload</span>
+            <span data-i18n="diag_upload">Upload Photo</span>
+          </button>
+        </div>
+        
+        <button class="btn btn-primary" id="scan-trigger-btn" onclick="captureAndScan()" disabled data-i18n="scan_leaf" style="opacity:0.5;">Analyze Leaf</button>
+        
+        <!-- Results Card -->
+        <div class="diag-results" id="diagnosis-results-card">
+          <div class="card" style="border-left: 6px solid var(--color-red); margin-top:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <h3 style="margin-bottom:0;" data-i18n="disease_name">Early Blight (Tomato)</h3>
+              <span class="pill pill-red" data-i18n="confidence">92% Confident</span>
+            </div>
+            
+            <p style="margin-bottom: 12px;"><strong data-i18n="cause_lbl">Cause:</strong> <span data-i18n="disease_cause">Alternaria solani fungus, triggered by humidity exceeding 75% for 48 hours.</span></p>
+            
+            <div style="background:var(--color-green-light); padding:12px; border-radius:14px; margin-bottom:12px;">
+              <h4 style="font-size:13px; color:var(--color-green-dark); margin-bottom:4px;" data-i18n="treatment_title">Organic Treatment Recommendation</h4>
+              <p style="font-size:12px; color:var(--color-green-dark);" data-i18n="treatment_desc">Prune lower infected foliage and apply copper fungicide spray immediately. Improve spacing to allow air circulation.</p>
+            </div>
+            
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:12px;">
+              <div>
+                <strong data-i18n="risk_spread">Spread Risk:</strong>
+                <span class="pill pill-red" style="font-size:10px;">High</span>
+              </div>
+              <div>
+                <strong data-i18n="nearby_cases">Nearby Cases:</strong>
+                <span class="pill pill-yellow" style="font-size:10px;">4 Farms</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- ----------------------------------------------------
+           SCREEN 9: CLIMATE SIMULATOR
+           ---------------------------------------------------- -->
+      <div class="screen" id="screen-simulator">
+        <h2 data-i18n="sim_title">Climate Simulator</h2>
+        <p data-i18n="sim_subtitle" style="margin-bottom:14px;">Simulate future crop yields based on climate adjustments</p>
+        
+        <div class="card">
+          <div class="input-group">
+            <label data-i18n="sim_crop">Select Crop</label>
+            <select class="input-field" id="sim-crop-select">
+              <option value="Tomato" data-i18n="crop_tomato">Tomato</option>
+              <option value="Maize" data-i18n="crop_maize">Maize</option>
+              <option value="Rice" data-i18n="crop_rice">Rice</option>
+            </select>
+          </div>
+          
+          <div class="grid-2">
+            <div class="input-group">
+              <label data-i18n="sim_rain">Rainfall Change</label>
+              <select class="input-field" id="sim-rain-select">
+                <option value="-25">-25% (Drought)</option>
+                <option value="0" selected>Normal</option>
+                <option value="25">+25% (Excessive)</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label data-i18n="sim_temp">Temp Increase</label>
+              <select class="input-field" id="sim-temp-select">
+                <option value="0.5">+0.5°C</option>
+                <option value="1.5" selected>+1.5°C</option>
+                <option value="2.5">+2.5°C</option>
+              </select>
+            </div>
+          </div>
+          
+          <button class="btn btn-primary" onclick="runSimulation()" data-i18n="run_simulation">Generate Simulation</button>
+        </div>
+        
+        <!-- Results -->
+        <div id="sim-results" class="d-none">
+          <div class="section-title" data-i18n="simulation_results">Simulation Results</div>
+          
+          <div class="grid-2">
+            <div class="sim-stat-box">
+              <div class="sim-stat-val" id="sim-yield-val" style="color:var(--color-red);">-18%</div>
+              <p style="font-size:11px; font-weight:600;" data-i18n="exp_yield">Expected Yield</p>
+            </div>
+            <div class="sim-stat-box">
+              <div class="sim-stat-val" id="sim-water-val" style="color:var(--color-blue);">+22%</div>
+              <p style="font-size:11px; font-weight:600;" data-i18n="water_requirement">Water Need</p>
+            </div>
+          </div>
+          
+          <div class="card" style="margin-top:12px;">
+            <h4 data-i18n="profit_impact">Net Profit Impact</h4>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin:8px 0;">
+              <span id="sim-profit-desc" style="font-weight:700; color:var(--color-red);" data-i18n="profit_loss">Expected Loss: -15%</span>
+              <span class="pill pill-red" id="sim-risk-pill">High Risk</span>
+            </div>
+            
+            <!-- Yield Line Graph (SVG) -->
+            <div class="chart-container">
+              <svg viewBox="0 0 300 100" width="100%" height="100%">
+                <line x1="20" y1="80" x2="280" y2="80" stroke="var(--color-border)" stroke-width="1.5"></line>
+                <line x1="20" y1="10" x2="20" y2="80" stroke="var(--color-border)" stroke-width="1.5"></line>
+                <!-- Trend line -->
+                <path d="M20,30 L80,38 L140,55 L200,68 L260,82" fill="none" stroke="var(--color-red)" stroke-width="2.5" stroke-linecap="round"></path>
+                <!-- Points -->
+                <circle cx="20" cy="30" r="3.5" fill="var(--color-red)"></circle>
+                <circle cx="80" cy="38" r="3.5" fill="var(--color-red)"></circle>
+                <circle cx="140" cy="55" r="3.5" fill="var(--color-red)"></circle>
+                <circle cx="200" cy="68" r="3.5" fill="var(--color-red)"></circle>
+                <circle cx="260" cy="82" r="3.5" fill="var(--color-red)"></circle>
+                <!-- Labels -->
+                <text x="20" y="94" font-size="8" fill="var(--color-gray-text)" text-anchor="middle">Normal</text>
+                <text x="140" y="94" font-size="8" fill="var(--color-gray-text)" text-anchor="middle">+1.5°C</text>
+                <text x="260" y="94" font-size="8" fill="var(--color-gray-text)" text-anchor="middle">+2.5°C</text>
+              </svg>
+            </div>
+          </div>
+          
+          <div class="card" style="border-left: 5px solid var(--color-green-primary);">
+            <h4 data-i18n="adaptive_rec">Adaptive Actions Recommended</h4>
+            <ul style="padding-left:16px; font-size:13px; color:var(--color-gray-text); margin-top:6px; line-height:1.6;">
+              <li data-i18n="adapt_1">Adopt dry-mulch techniques to shield soil temperature.</li>
+              <li data-i18n="adapt_2">Integrate heat-resistant seed cultivars (e.g., Arka Rakshak).</li>
+              <li data-i18n="adapt_3">Configure micro-sprinklers to reduce transpiration stress.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <!-- ----------------------------------------------------
+           SCREEN 10: COMMUNITY MAP
+           ---------------------------------------------------- -->
+      <div class="screen" id="screen-community">
+        <h2 data-i18n="community_title">Community Intelligence</h2>
+        <p data-i18n="community_subtitle" style="margin-bottom:14px;">Report incidents and coordinate local safety issues</p>
+        
+        <div class="map-container">
+          <!-- Stylized map overlays -->
+          <button class="map-overlay-btn" onclick="openReportIncidentSheet()">
+            <span class="material-icons-round" style="font-size:14px;">add_circle</span>
+            <span data-i18n="report_incident_btn">Report Issue</span>
+          </button>
+          
+          <!-- Stylized SVG Map -->
+          <svg class="map-svg" viewBox="0 0 350 380" id="community-map-canvas">
+            <!-- Road grids -->
+            <path d="M0,80 L350,90 M0,280 L350,260 M120,0 L140,380 M270,0 L240,380" fill="none" stroke="#FAFCD5" stroke-width="12" opacity="0.65"></path>
+            <!-- Water Body -->
+            <path d="M0,0 Q60,80 30,160 Q0,200 40,240 L0,240 Z" fill="#A5C7E8" opacity="0.6"></path>
+            <!-- Forest Green Zones -->
+            <rect x="180" y="140" width="80" height="90" rx="15" fill="#CDE2C6" opacity="0.5"></rect>
+            <rect x="40" y="300" width="100" height="60" rx="15" fill="#CDE2C6" opacity="0.5"></rect>
+            
+            <!-- Map labels -->
+            <text x="210" y="120" font-size="10" font-weight="700" fill="#6A8563" opacity="0.8">Tomato Farms</text>
+            <text x="50" y="240" font-size="10" font-weight="700" fill="#507E9E" opacity="0.8">Irrigation Canal</text>
+            
+            <!-- Pins container -->
+            <g id="map-pins-container"></g>
+          </svg>
+          
+          <!-- Interactive details card layered on map -->
+          <div class="card map-bottom-card" id="map-pin-card">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+              <div>
+                <h4 style="margin:0;" id="map-card-title">Fall Armyworm Incursion</h4>
+                <p style="font-size:11px; margin-top:2px;" id="map-card-location">Hulikere Border (1.2km away)</p>
+              </div>
+              <span class="pill pill-yellow" id="map-card-priority">High Priority</span>
+            </div>
+            
+            <p style="font-size:12px; margin-top:8px;" id="map-card-desc">Tomato crop leaves show extensive skeletonization. Spray organic chemical immediately.</p>
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; padding-top:10px; border-top:1px solid var(--color-border);">
+              <button class="btn btn-secondary" style="padding:6px 12px; font-size:11px; width:auto; border-radius:10px;" onclick="upvoteIncident()">
+                <span class="material-icons-round" style="font-size:14px;">thumb_up</span>
+                <span id="map-card-upvotes">24</span>
+              </button>
+              <div style="display:flex; gap:6px; align-items:center; font-size:12px; color:var(--color-gray-text);">
+                <span class="material-icons-round" style="font-size:16px;">forum</span>
+                <span id="map-card-comments">5 Comments</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Action list for nearby dashboard -->
+        <div class="section-title" data-i18n="community_feed">Recent Feed Reports</div>
+        <div id="community-feed-container"></div>
+      </div>
+      
+      <!-- ----------------------------------------------------
+           SCREEN 11: VILLAGE DASHBOARD
+           ---------------------------------------------------- -->
+      <div class="screen" id="screen-village">
+        <h2 data-i18n="village_dash_title">Village Dashboard</h2>
+        <p data-i18n="village_dash_subtitle" style="margin-bottom:14px;">Community cooperative analytics for Hulikere village</p>
+        
+        <div class="grid-2">
+          <!-- Village Climate Score -->
+          <div class="card text-center" style="margin-bottom:12px;">
+            <h4 data-i18n="village_score_lbl">Climate Score</h4>
+            <div style="font-size:28px; font-weight:800; color:var(--color-green-primary); margin:8px 0;">78/100</div>
+            <span class="pill pill-green">&uarr; 12% Improved</span>
+          </div>
+          <!-- Cooperative Active Alerts -->
+          <div class="card text-center" style="margin-bottom:12px;">
+            <h4 data-i18n="village_active_alerts">Active Warnings</h4>
+            <div style="font-size:28px; font-weight:800; color:var(--color-red); margin:8px 0;">3</div>
+            <span class="pill pill-red" data-i18n="village_urgent">Urgent Action</span>
+          </div>
+        </div>
+        
+        <!-- Water storage tank indicators -->
+        <div class="card">
+          <h4 data-i18n="village_water_lbl">Village Irrigation Storage</h4>
+          <div style="display:flex; justify-content:space-between; font-size:12px; margin:8px 0 4px 0; font-weight:600;">
+            <span data-i18n="village_capacity">Hulikere Lake Capacity</span>
+            <span style="color:var(--color-red);">32% remaining</span>
+          </div>
+          <div style="width:100%; height:12px; background:var(--color-green-light); border-radius:10px; overflow:hidden;">
+            <div style="width:32%; height:100%; background:var(--color-red); border-radius:10px;"></div>
+          </div>
+          <p style="font-size:11px; margin-top:8px;" data-i18n="village_water_warning">Critical warning: Water discharge release limits initialized.</p>
+        </div>
+        
+        <!-- Cooperative updates -->
+        <div class="section-title" data-i18n="village_news">Cooperative Announcements</div>
+        <div class="card" style="padding:14px;">
+          <h4 style="font-size:14px; margin-bottom:4px;" data-i18n="coop_1_title">Canal Water Allocation Rotation</h4>
+          <p style="font-size:12px; margin-bottom:8px;" data-i18n="coop_1_desc">Water supply will be routed to North Sector crop plots starting Thursday 6:00 AM.</p>
+          <span class="pill pill-blue">Co-op Committee</span>
+        </div>
+      </div>
+      
+      <!-- ----------------------------------------------------
+           SCREEN 12: EMERGENCY MODE
+           ---------------------------------------------------- -->
+      <div class="screen" id="screen-emergency">
+        <h2 data-i18n="emergency_title" style="color:var(--color-red);">Emergency Mode</h2>
+        <p data-i18n="emergency_subtitle" style="margin-bottom:14px;">One-tap SOS and disaster support coordinates</p>
+        
+        <div class="sos-countdown-banner" id="sos-countdown-msg">
+          <span data-i18n="sos_triggered">SOS TRIGGERED! Live location dispatched.</span>
+        </div>
+        
+        <div class="card text-center" style="border-color:#FCA5A5;">
+          <button class="emergency-pulse-btn" id="sos-main-trigger" onclick="triggerSOSAlert()">
+            <span class="material-icons-round">emergency_share</span>
+            <strong>SOS</strong>
+          </button>
+          <p style="font-size:13px; font-weight:600;" data-i18n="sos_helper_txt">Press button to share live location with Disaster Support Team</p>
+        </div>
+        
+        <!-- Emergency contacts list -->
+        <div class="section-title" data-i18n="emergency_contacts">Emergency Contacts</div>
+        
+        <div class="card" style="padding:10px 16px;">
+          <div class="action-row" style="cursor:pointer;" onclick="simulatePhoneDial('911-Agriculture')">
+            <div class="action-icon" style="background:#FEE2E2; color:var(--color-red);">
+              <span class="material-icons-round">phone</span>
+            </div>
+            <div class="action-text">
+              <h4 style="margin:0; font-size:14px;" data-i18n="contact_agri_office">Mandya Krishi Kendra</h4>
+              <p style="font-size:11px;" data-i18n="distance_agri">District Extension Officer & bull; 4.2km</p>
+            </div>
+            <span class="material-icons-round" style="color:var(--color-gray-text);">call</span>
+          </div>
+          
+          <div class="action-row" style="cursor:pointer;" onclick="simulatePhoneDial('911-Shelter')">
+            <div class="action-icon" style="background:#DBEAFE; color:var(--color-blue);">
+              <span class="material-icons-round">holiday_village</span>
+            </div>
+            <div class="action-text">
+              <h4 style="margin:0; font-size:14px;" data-i18n="contact_shelter">Hulikere Relief Shelter</h4>
+              <p style="font-size:11px;" data-i18n="distance_shelter">Disaster Community Hall & bull; 1.2km</p>
+            </div>
+            <span class="material-icons-round" style="color:var(--color-gray-text);">call</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- ----------------------------------------------------
+           SCREEN 13: IMPACT DASHBOARD
+           ---------------------------------------------------- -->
+      <div class="screen" id="screen-impact">
+        <h2 data-i18n="impact_title">Impact Tracker</h2>
+        <p data-i18n="impact_subtitle" style="margin-bottom:14px;">Carbon and resources saved through resilience actions</p>
+        
+        <div class="grid-2">
+          <div class="card text-center" style="margin-bottom:12px;">
+            <span class="material-icons-round" style="color:var(--color-green-primary); font-size:28px;">eco</span>
+            <h4 style="font-size:12px; margin-top:4px;" data-i18n="co2_saved_lbl">CO₂ Prevented</h4>
+            <div style="font-size:20px; font-weight:800; color:var(--color-green-dark); margin:6px 0;">24.6 kg</div>
+          </div>
+          <div class="card text-center" style="margin-bottom:12px;">
+            <span class="material-icons-round" style="color:var(--color-blue); font-size:28px;">water</span>
+            <h4 style="font-size:12px; margin-top:4px;" data-i18n="water_saved_lbl">Water Conserved</h4>
+            <div style="font-size:20px; font-weight:800; color:var(--color-green-dark); margin:6px 0;">12,500 L</div>
+          </div>
+        </div>
+        
+        <!-- Streak Container -->
+        <div class="card streak-container" style="padding:14px;">
+          <span class="material-icons-round streak-flame">local_fire_department</span>
+          <div>
+            <h4 style="color:#C2410C; margin-bottom:2px;" data-i18n="streak_title">5 Week Streak!</h4>
+            <p style="color:#EA580C; font-size:12px;" data-i18n="streak_desc">You completed climate actions weekly to protect Mandya's soil health.</p>
+          </div>
+        </div>
+        
+        <!-- Badges Scroll -->
+        <div class="section-title" data-i18n="badges_title">Earned Badges</div>
+        <div class="badge-scroll">
+          <div class="badge-card unlocked">
+            <div class="badge-icon"><span class="material-icons-round">eco</span></div>
+            <div class="badge-name" data-i18n="badge_1">Eco Farmer</div>
+          </div>
+          <div class="badge-card unlocked">
+            <div class="badge-icon"><span class="material-icons-round">opacity</span></div>
+            <div class="badge-name" data-i18n="badge_2">Water Savior</div>
+          </div>
+          <div class="badge-card">
+            <div class="badge-icon"><span class="material-icons-round">groups</span></div>
+            <div class="badge-name" data-i18n="badge_3">Advisor Helper</div>
+          </div>
+          <div class="badge-card">
+            <div class="badge-icon"><span class="material-icons-round">military_tech</span></div>
+            <div class="badge-name" data-i18n="badge_4">Champion</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- ----------------------------------------------------
+           SCREEN 14: FARMER PROFILE
+           ---------------------------------------------------- -->
+      <div class="screen" id="screen-profile">
+        <h2 data-i18n="profile_title">Farmer Profile</h2>
+        <p data-i18n="profile_subtitle" style="margin-bottom:14px;">Personalize your platform settings</p>
+        
+        <div class="card" style="display:flex; align-items:center; gap:16px; padding:16px;">
+          <div class="user-avatar" style="width:60px; height:60px; font-size:28px;">👨‍🌾</div>
+          <div>
+            <h3 style="margin-bottom:2px;">Ramesh Kumar</h3>
+            <p style="font-size:12px; font-weight:500;" data-i18n="profile_role">Agri Member since 2024</p>
+          </div>
+        </div>
+        
+        <div class="card" style="padding:10px 16px;">
+          <!-- Preferred Language -->
+          <div class="form-switch" style="border-bottom: 1px solid var(--color-border); padding-bottom:12px;">
+            <label style="font-weight:600; font-size:14px;" data-i18n="preferred_lang">System Language</label>
+            <select class="input-field" style="width:120px; padding:6px 10px; border-radius:10px; font-size:12px;" id="profile-lang-select" onchange="setLanguage(this.value)">
+              <option value="en">English</option>
+              <option value="hi">हिंदी</option>
+              <option value="kn">ಕನ್ನಡ</option>
+            </select>
+          </div>
+          
+          <!-- Dark Mode Toggle -->
+          <div class="form-switch" style="border-bottom: 1px solid var(--color-border); padding: 12px 0;">
+            <label style="font-weight:600; font-size:14px;" data-i18n="dark_mode">Dark Mode</label>
+            <label class="switch">
+              <input type="checkbox" id="dark-mode-toggle" onchange="toggleDarkMode(this.checked)">
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <!-- Location Settings -->
+          <div class="form-switch" style="border-bottom: 1px solid var(--color-border); padding: 12px 0; flex-direction: column; align-items: flex-start; gap: 8px;">
+            <label style="font-weight:600; font-size:14px;" data-i18n="location_settings_title">Location Settings</label>
+            <div style="display:flex; width:100%; gap:8px;">
+              <input type="text" id="profile-location-input" class="input-field" value="Mandya, Karnataka" style="padding:8px 12px; font-size:12px; flex:1; border-radius:10px;" placeholder="Enter location...">
+              <button class="btn btn-primary" onclick="updateUserLocation()" style="width:auto; padding:8px 14px; font-size:12px; border-radius:10px;">Update</button>
+            </div>
+          </div>
+          
+          <!-- Emergency Mode Redirect -->
+          <div class="action-row" style="padding: 12px 0 0 0;" onclick="showScreen('screen-emergency')">
+            <div style="display:flex; align-items:center; gap:8px; width:100%;">
+              <span class="material-icons-round" style="color:var(--color-red);">emergency</span>
+              <h4 style="margin:0; font-size:14px; color:var(--color-red);" data-i18n="trigger_sos_menu">Trigger Emergency SOS</h4>
+            </div>
+            <span class="material-icons-round action-chevron">chevron_right</span>
+          </div>
+        </div>
+        
+        <!-- Government Schemes list -->
+        <div class="section-title" data-i18n="gov_schemes">Active Government Schemes</div>
+        <div class="card" style="padding:14px;">
+          <h4 style="font-size:14px; margin-bottom:4px;" data-i18n="scheme_1_title">PM Krishi Sinchayee Yojana</h4>
+          <p style="font-size:12px; margin-bottom:8px;" data-i18n="scheme_1_desc">Provides 80% subsidy for micro-drip irrigation configurations for drylands.</p>
+          <button class="btn btn-secondary" style="padding:6px 12px; font-size:12px; width:auto; border-radius:10px;" data-i18n="apply_now">Apply Now</button>
+        </div>
+        
+        <button class="btn btn-outline" onclick="showScreen('screen-login')" data-i18n="logout" style="margin-top:20px;">Logout</button>
+      </div>
+      
+    </div>
+    
+    <!-- ----------------------------------------------------
+         BOTTOM NAVIGATION BAR (Visible on app screens 4-14)
+         ---------------------------------------------------- -->
+    <div class="bottom-nav d-none" id="bottom-nav">
+      <a class="nav-item active" id="tab-btn-home" onclick="navigateTab('screen-home', this)">
+        <span class="material-icons-round">home</span>
+        <div data-i18n="tab_home">Home</div>
+      </a>
+      <a class="nav-item" id="tab-btn-advisor" onclick="navigateTab('screen-advisor', this)">
+        <span class="material-icons-round">smart_toy</span>
+        <div data-i18n="tab_assistant">Advisor</div>
+      </a>
+      <a class="nav-item" id="tab-btn-calendar" onclick="navigateTab('screen-calendar', this)">
+        <span class="material-icons-round">calendar_today</span>
+        <div data-i18n="tab_calendar">Calendar</div>
+      </a>
+      <a class="nav-item" id="tab-btn-community" onclick="navigateTab('screen-community', this)">
+        <span class="material-icons-round">groups</span>
+        <div data-i18n="tab_community">Community</div>
+      </a>
+      <a class="nav-item" id="tab-btn-profile" onclick="navigateTab('screen-profile', this)">
+        <span class="material-icons-round">person</span>
+        <div data-i18n="tab_profile">Profile</div>
+      </a>
+    </div>
+    
+    <!-- HOME INDICATOR CHIN -->
+    <div class="phone-home-indicator"></div>
+
+    <!-- ----------------------------------------------------
+         MODALS / BOTTOM SHEETS - INSIDE THE BEZEL CONTEXT
+         ---------------------------------------------------- -->
+    <div class="bottom-sheet-backdrop" id="bottom-sheet-backdrop" onclick="closeBottomSheet()"></div>
+
+    <!-- Bottom Sheet 1: Incident Reporting Form -->
+    <div class="bottom-sheet" id="report-incident-sheet">
+      <div class="bottom-sheet-header">
+        <h3 style="margin:0; font-size:16px;" data-i18n="report_sheet_title">Report Local Hazard</h3>
+        <button class="notification-btn" style="border:none; width:30px; height:30px;" onclick="closeBottomSheet()">
+          <span class="material-icons-round" style="font-size:18px;">close</span>
+        </button>
+      </div>
+      
+      <div class="input-group" style="margin-bottom:12px;">
+        <label style="font-size:12px;" data-i18n="hazard_type">Hazard Type</label>
+        <select class="input-field" id="new-hazard-type" style="padding:10px;">
+          <option value="pest" data-i18n="hazard_pest">Pest Incursion</option>
+          <option value="water" data-i18n="hazard_water">Water Shortage</option>
+          <option value="flood" data-i18n="hazard_flood">Flooding Alert</option>
+        </select>
+      </div>
+      
+      <div class="input-group" style="margin-bottom:12px;">
+        <label style="font-size:12px;" data-i18n="hazard_location">Location Details</label>
+        <input type="text" id="new-hazard-location" class="input-field" value="Mandya Sector 4" style="padding:10px;">
+      </div>
+      
+      <div class="input-group" style="margin-bottom:12px;">
+        <label style="font-size:12px;" data-i18n="hazard_desc">Description</label>
+        <input type="text" id="new-hazard-desc" class="input-field" placeholder="Describe what you see..." style="padding:10px;">
+      </div>
+      
+      <button class="btn btn-primary" onclick="submitNewIncident()" style="padding:10px 14px; font-size:14px;" data-i18n="submit_report">Submit Alert</button>
+    </div>
+
+    <!-- Bottom Sheet 2: Notification Alerts Drawer -->
+    <div class="bottom-sheet" id="notification-alerts-sheet">
+      <div class="bottom-sheet-header">
+        <h3 style="margin:0; font-size:16px;" data-i18n="notifications_title">Active Climate Advisories</h3>
+        <button class="notification-btn" style="border:none; width:30px; height:30px;" onclick="closeBottomSheet()">
+          <span class="material-icons-round" style="font-size:18px;">close</span>
+        </button>
+      </div>
+      
+      <div class="card" style="background:#FFF1F2; border-color:#FECDD3; padding:12px; margin-bottom:10px;">
+        <h4 style="color:var(--color-red); margin-bottom:2px; font-size:13px;" data-i18n="alert_notif_1_title">Heavy Rainfall Alert (Mandya Area)</h4>
+        <p style="color:#9C1D18; font-size:11px;" data-i18n="alert_notif_1_desc">Expect precipitation exceeding 45mm within the next 24 hours. Clear primary drains.</p>
+      </div>
+      
+      <div class="card" style="padding:12px; margin-bottom:10px;">
+        <h4 style="color:var(--color-yellow); margin-bottom:2px; font-size:13px;" data-i18n="alert_notif_2_title">Pest Alert: Fall Armyworm</h4>
+        <p style="color:#B45309; font-size:11px;" data-i18n="alert_notif_2_desc">Spotted in Srirangapatna village. Spray Neem Seed Kernel extract if spots show.</p>
+      </div>
+    </div>
+    
+  </div>
+  
+</div>
+
+<!-- ----------------------------------------------------
+     JAVASCRIPT LOGIC - DYNAMIC INTERACTION ENGINE
+     ---------------------------------------------------- -->
+<script>
+  // 1. Language Translation Dictionary (English, Hindi, Kannada)
+  const translations = {
+    en: {
+      splash_tagline: "Turning Forecasts into Field Decisions",
+      get_started: "Get Started",
+      onboard_1_title: "Climate Challenges",
+      onboard_1_desc: "Climate is changing. Your decisions should too.",
+      onboard_2_title: "AI Recommendations",
+      onboard_2_desc: "Receive personalized farming advice based on climate data.",
+      onboard_3_title: "Community Intelligence",
+      onboard_3_desc: "आस-पास के किसानों की रिपोर्टों के माध्यम से सूचित रहें।",
+      continue: "Continue",
+      login_title: "Verify Phone",
+      login_subtitle: "Enter your mobile number to get started",
+      phone_number: "Phone Number",
+      get_otp: "Get OTP",
+      enter_otp: "Enter 4-Digit OTP",
+      verify_login: "Verify & Login",
+      or: "OR",
+      google_login: "Continue with Google",
+      guest_mode: "Explore as Guest",
+      greeting: "Good Morning, Ramesh",
+      location: "Mandya, Karnataka",
+      outlook_title: "Today's Farm Outlook",
+      updated_time: "Updated 10m ago",
+      risk_label: "Moderate",
+      overall_risk: "Overall Climate Risk",
+      risk_desc: "Crop safety requires partial adjustments today.",
+      rain_risk: "Rain Risk",
+      heat_stress: "Heat Stress",
+      water_stress: "Water Stress",
+      recommended_actions: "Recommended Actions",
+      action_1: "Delay irrigation by 2 days",
+      action_2: "Harvest tomatoes before Friday",
+      action_3: "Avoid pesticide spraying tomorrow",
+      community_alert_title: "Community Warning",
+      community_alert_desc: "Nearby farmers reported Fall Armyworm outbreak.",
+      weather_summary: "Weather Summary",
+      temp: "Temp",
+      humidity: "Humidity",
+      wind: "Wind",
+      rain_prob: "Rain Prob",
+      tab_home: "Home",
+      tab_assistant: "Advisor",
+      tab_calendar: "Calendar",
+      tab_community: "Community",
+      tab_profile: "Profile",
+      advisor_header_title: "AI Farm Advisor",
+      advisor_header_desc: "Your agronomy assistant",
+      chat_welcome: "Namaskara Ramesh! I've analyzed Mandya's rain warnings. How can I help you protect your crops today?",
+      prompt_1: "Will tomorrow's rainfall damage flowering tomato?",
+      prompt_2: "Should I irrigate today?",
+      prompt_3: "Pesticide spray recommendations",
+      calendar_title: "Crop Calendar",
+      calendar_subtitle: "Smart task organizer for your farm",
+      cal_task_1: "Watering: Delay Irrigation",
+      cal_task_1_desc: "High rainfall expected. Automated gate closed.",
+      cal_task_2: "Foliar Nutrient Spraying",
+      cal_task_2_desc: "Apply Calcium Boron to tomato flowers to prevent drop.",
+      cal_task_3: "Disease Risk Inspection",
+      cal_task_3_desc: "Inspect lower tomato leaves for brown blight spots.",
+      harvest_window_title: "Best Tomato Harvest Window",
+      harvest_window_desc: "June 12 - June 15. Expected yield optimization: +15%.",
+      risk_dash_title: "Climate Risks",
+      risk_dash_subtitle: "Scientific risk analysis for crop type: Tomato",
+      risk_item_1: "Heavy Rainfall Risk",
+      risk_item_1_detail: "73% risk of flower damage and crop rot due to excess water logging. Recommendation: Clear field drains immediately and spray foliar calcium to boost root strength.",
+      risk_item_2: "Water Scarcity & Stress",
+      risk_item_2_detail: "61% risk of soil dry-out. Switch to drip irrigation. Schedule irrigation cycle post 6:00 PM to reduce heat evaporation.",
+      risk_item_3: "Heatwave Stress",
+      risk_item_3_detail: "48% risk of pollen sterility. Keep soil mulched with residue straw to cool down root temperatures.",
+      diag_title: "Crop Disease Diagnosis",
+      diag_subtitle: "Instant leaf analysis using camera diagnostics",
+      scan_leaf: "Analyze Leaf",
+      scanning_status: "SCANNING LEAF...",
+      disease_name: "Early Blight (Tomato)",
+      confidence: "92% Confident",
+      cause_lbl: "Cause",
+      disease_cause: "Alternaria solani fungus, triggered by humidity exceeding 75% for 48 hours.",
+      treatment_title: "Organic Treatment Recommendation",
+      treatment_desc: "Prune lower infected foliage and apply copper fungicide spray immediately. Improve spacing to allow air circulation.",
+      risk_spread: "Spread Risk",
+      nearby_cases: "Nearby Cases",
+      sim_title: "Climate Simulator",
+      sim_subtitle: "Simulate future crop yields based on climate adjustments",
+      sim_crop: "Select Crop",
+      crop_tomato: "Tomato",
+      crop_maize: "Maize",
+      crop_rice: "Rice",
+      sim_rain: "Rainfall Change",
+      sim_temp: "Temp Increase",
+      run_simulation: "Generate Simulation",
+      simulation_results: "Simulation Results",
+      exp_yield: "Expected Yield",
+      water_requirement: "Water Need",
+      profit_impact: "Net Profit Impact",
+      profit_loss: "Expected Loss: -15%",
+      adaptive_rec: "Adaptive Actions Recommended",
+      adapt_1: "Adopt dry-mulch techniques to shield soil temperature.",
+      adapt_2: "Integrate heat-resistant seed cultivars (e.g., Arka Rakshak).",
+      adapt_3: "Configure micro-sprinklers to reduce transpiration stress.",
+      community_title: "Community Intelligence",
+      community_subtitle: "Report incidents and coordinate local safety issues",
+      report_incident_btn: "Report Issue",
+      community_feed: "Recent Feed Reports",
+      feed_report_1: "Pest Outbreak: Fall Armyworm",
+      village_dash_title: "Village Dashboard",
+      village_dash_subtitle: "Community cooperative analytics for Hulikere village",
+      village_score_lbl: "Climate Score",
+      village_active_alerts: "Active Warnings",
+      village_urgent: "Urgent Action",
+      village_water_lbl: "Village Irrigation Storage",
+      village_capacity: "Hulikere Lake Capacity",
+      village_water_warning: "Critical warning: Water discharge release limits initialized.",
+      village_news: "Cooperative Announcements",
+      coop_1_title: "Canal Water Allocation Rotation",
+      coop_1_desc: "Water supply will be routed to North Sector crop plots starting Thursday 6:00 AM.",
+      emergency_title: "Emergency Mode",
+      emergency_subtitle: "One-tap SOS and disaster support coordinates",
+      sos_triggered: "SOS TRIGGERED! Live location dispatched.",
+      sos_helper_txt: "Press button to share live location with Disaster Support Team",
+      emergency_contacts: "Emergency Contacts",
+      contact_agri_office: "Mandya Krishi Kendra",
+      distance_agri: "District Extension Officer & bull; 4.2km",
+      contact_shelter: "Hulikere Relief Shelter",
+      distance_shelter: "Disaster Community Hall & bull; 1.2km",
+      offline_guide_title: "Offline Security Procedures",
+      offline_guide_desc: "These agricultural rescue guides are available offline in case cellular towers fail during climate events.",
+      impact_title: "Impact Tracker",
+      impact_subtitle: "Carbon and resources saved through resilience actions",
+      co2_saved_lbl: "CO₂ Prevented",
+      water_saved_lbl: "Water Conserved",
+      streak_title: "5 Week Streak!",
+      streak_desc: "You completed climate actions weekly to protect Mandya's soil health.",
+      badges_title: "Earned Badges",
+      badge_1: "Eco Farmer",
+      badge_2: "Water Savior",
+      badge_3: "Advisor Helper",
+      badge_4: "Champion",
+      profile_title: "Farmer Profile",
+      profile_subtitle: "Personalize your platform settings",
+      profile_role: "Agri Member since 2024",
+      preferred_lang: "System Language",
+      dark_mode: "Dark Mode",
+      location_settings_title: "Location Settings",
+      trigger_sos_menu: "Trigger Emergency SOS",
+      gov_schemes: "Active Government Schemes",
+      scheme_1_title: "PM Krishi Sinchayee Yojana",
+      scheme_1_desc: "Provides 80% subsidy for micro-drip irrigation configurations for drylands.",
+      apply_now: "Apply Now",
+      logout: "Logout",
+      report_sheet_title: "Report Local Hazard",
+      hazard_type: "Hazard Type",
+      hazard_pest: "Pest Incursion",
+      hazard_water: "Water Shortage",
+      hazard_flood: "Flooding Alert",
+      hazard_location: "Location Details",
+      hazard_desc: "Description",
+      submit_report: "Submit Alert",
+      notifications_title: "Active Climate Advisories",
+      alert_notif_1_title: "Heavy Rainfall Alert (Mandya Area)",
+      alert_notif_1_desc: "Expect precipitation exceeding 45mm within the next 24 hours. Clear primary drains.",
+      alert_notif_2_title: "Pest Alert: Fall Armyworm",
+      alert_notif_2_desc: "Spotted in Srirangapatna village. Spray Neem Seed Kernel extract if spots show."
+    },
+    hi: {
+      splash_tagline: "पूर्वानुमान को खेत के फैसलों में बदलना",
+      get_started: "शुरू करें",
+      onboard_1_title: "जलवायु चुनौतियाँ",
+      onboard_1_desc: "जलवायु बदल रही है। आपके फैसले भी बदलने चाहिए।",
+      onboard_2_title: "एआई सिफारिशें",
+      onboard_2_desc: "जलवायु डेटा के आधार पर व्यक्तिगत खेती सलाह प्राप्त करें।",
+      onboard_3_title: "सामुदायिक खुफिया",
+      onboard_3_desc: "ಹತ್ತಿರದ ರೈತರ ವರದಿಗಳ ಮೂಲಕ ಮಾಹಿತಿ ಪಡೆಯಿರಿ.",
+      continue: "आगे बढ़ें",
+      login_title: "फोन सत्यापित करें",
+      login_subtitle: "शुरू करने के लिए अपना मोबाइल नंबर दर्ज करें",
+      phone_number: "फ़ोन नंबर",
+      get_otp: "ओटीपी प्राप्त करें",
+      enter_otp: "4-अंकीय ओटीपी दर्ज करें",
+      verify_login: "सत्यापित करें और लॉगिन करें",
+      or: "या",
+      google_login: "गूगल के साथ जारी रखें",
+      guest_mode: "अतिथि के रूप में अन्वेषण करें",
+      greeting: "शुभ प्रभात, रमेश",
+      location: "मंड्या, कर्नाटक",
+      outlook_title: "आज का कृषि आउटलुक",
+      updated_time: "10 मिनट पहले अपडेट किया गया",
+      risk_label: "मध्यम",
+      overall_risk: "समग्र जलवायु जोखिम",
+      risk_desc: "फसल सुरक्षा के लिए आज आंशिक बदलाव की आवश्यकता है।",
+      rain_risk: "बारिश का जोखिम",
+      heat_stress: "गर्मी का तनाव",
+      water_stress: "जल का तनाव",
+      recommended_actions: "अनुशंसित कार्रवाइयां",
+      action_1: "सिंचाई में 2 दिन की देरी करें",
+      action_2: "शुक्रवार से पहले टमाटर की कटाई करें",
+      action_3: "कल कीटनाशक छिड़काव से बचें",
+      community_alert_title: "सामुदायिक चेतावनी",
+      community_alert_desc: "आस-पास के किसानों ने फॉल आर्मीवॉर्म के प्रकोप की सूचना दी।",
+      weather_summary: "मौसम सारांश",
+      temp: "तापमान",
+      humidity: "आर्द्रता",
+      wind: "हवा",
+      rain_prob: "बारिश की संभावना",
+      tab_home: "होम",
+      tab_assistant: "सलाहकार",
+      tab_calendar: "कैलेंडर",
+      tab_community: "समुदाय",
+      tab_profile: "प्रोफ़ाइल",
+      advisor_header_title: "एआई कृषि सलाहकार",
+      advisor_header_desc: "आपका कृषि सहायक",
+      chat_welcome: "नमस्कार रमेश! मैंने मंड्या की बारिश की चेतावनियों का विश्लेषण किया है। आज आपकी फसलों की सुरक्षा में मैं आपकी क्या मदद कर सकता हूँ?",
+      prompt_1: "क्या कल की बारिश से टमाटर के फूलों को नुकसान होगा?",
+      prompt_2: "क्या मुझे आज सिंचाई करनी चाहिए?",
+      prompt_3: "कीटनाशक छिड़काव की सिफारिशें",
+      calendar_title: "फसल कैलेंडर",
+      calendar_subtitle: "आपके खेत के लिए स्मार्ट कार्य आयोजक",
+      cal_task_1: "सिंचाई: पानी देने में देरी करें",
+      cal_task_1_desc: "भारी बारिश की उम्मीद। स्वचालित गेट बंद किया गया।",
+      cal_task_2: "पर्ण पोषक तत्व छिड़काव",
+      cal_task_2_desc: "टमाटर के फूलों को झड़ने से रोकने के लिए कैल्शियम बोरॉन लगाएं।",
+      cal_task_3: "रोग जोखिम निरीक्षण",
+      cal_task_3_desc: "टमाटर के निचले पत्तों पर भूरे रंग के धब्बों की जाँच करें।",
+      harvest_window_title: "टमाटर की कटाई का सर्वोत्तम समय",
+      harvest_window_desc: "12 जून - 15 जून। अपेक्षित उपज अनुकूलन: +15%.",
+      risk_dash_title: "जलवायु जोखिम",
+      risk_dash_subtitle: "टमाटर की फसल के लिए वैज्ञानिक जोखिम विश्लेषण",
+      risk_item_1: "भारी बारिश का जोखिम",
+      risk_item_1_detail: "अत्यधिक जलभराव के कारण फूलों के नुकसान और फसल सड़ने का 73% जोखिम। तुरंत जलनिकासी साफ करें और जड़ की ताकत बढ़ाने के लिए कैल्शियम का छिड़काव करें।",
+      risk_item_2: "पानी की कमी और तनाव",
+      risk_item_2_detail: "मिट्टी सूखने का 61% जोखिम। ड्रिप सिंचाई अपनाएं। वाष्पीकरण को कम करने के लिए शाम 6 बजे के बाद सिंचाई करें।",
+      risk_item_3: "लू का तनाव",
+      risk_item_3_detail: "पराग बांझपन का 48% जोखिम। जड़ों के तापमान को ठंडा रखने के लिए मिट्टी को पुआल से ढककर रखें।",
+      diag_title: "फसल रोग निदान",
+      diag_subtitle: "कैमरा डायग्नोस्टिक्स का उपयोग करके त्वरित पत्ती विश्लेषण",
+      scan_leaf: "पत्ती का विश्लेषण करें",
+      scanning_status: "पत्ती को स्कैन किया जा रहा है...",
+      disease_name: "अगेती झुलसा (टमाटर)",
+      confidence: "92% आश्वस्त",
+      cause_lbl: "कारण",
+      disease_cause: "अल्टरनेरिया सोलानी कवक, 48 घंटों तक 75% से अधिक आर्द्रता के कारण सक्रिय।",
+      treatment_title: "जैविक उपचार सिफारिश",
+      treatment_desc: "संक्रमित पत्तियों की छंटाई करें और तुरंत कॉपर कवकनाशी का छिड़काव करें। हवा के प्रवाह के लिए पौधों के बीच अंतर सुधारें।",
+      risk_spread: "फैलने का जोखिम",
+      nearby_cases: "आस-पास के मामले",
+      sim_title: "जलवायु सिम्युलेटर",
+      sim_subtitle: "जलवायु समायोजन के आधार पर भविष्य की फसल पैदावार का अनुकरण करें",
+      sim_crop: "फसल चुनें",
+      crop_tomato: "टमाटर",
+      crop_maize: "मक्का",
+      crop_rice: "धान",
+      sim_rain: "बारिश में बदलाव",
+      sim_temp: "तापमान वृद्धि",
+      run_simulation: "सिमुलेशन उत्पन्न करें",
+      simulation_results: "सिमुलेशन परिणाम",
+      exp_yield: "अपेक्षित उपज",
+      water_requirement: "पानी की आवश्यकता",
+      profit_impact: "शुद्ध लाभ प्रभाव",
+      profit_loss: "अपेक्षित नुकसान: -15%",
+      adaptive_rec: "अनुशंसित अनुकूली कार्रवाइयां",
+      adapt_1: "मिट्टी के तापमान को बचाने के लिए मल्चिंग तकनीकों को अपनाएं।",
+      adapt_2: "गर्मी प्रतिरोधी बीजों का उपयोग करें (जैसे, अर्क रक्षक)।",
+      adapt_3: "पानी के वाष्पीकरण तनाव को कम करने के लिए माइक्रो-स्प्रिंकलर लगाएं।",
+      community_title: "सामुदायिक खुफिया",
+      community_subtitle: "घटनाओं की रिपोर्ट करें और स्थानीय सुरक्षा मुद्दों का समन्वय करें",
+      report_incident_btn: "समस्या की रिपोर्ट करें",
+      community_feed: "हालिया सामुदायिक रिपोर्ट",
+      feed_report_1: "कीट प्रकोप: फॉल आर्मीवॉर्म",
+      village_dash_title: "ग्राम डैशबोर्ड",
+      village_dash_subtitle: "हुलिकेरे गांव के लिए सहकारी विश्लेषण",
+      village_score_lbl: "जलवायु स्कोर",
+      village_active_alerts: "सक्रिय चेतावनियाँ",
+      village_urgent: "त्वरित कार्रवाई",
+      village_water_lbl: "ग्राम सिंचाई भंडारण",
+      village_capacity: "हुलिकेरे झील की क्षमता",
+      village_water_warning: "महत्वपूर्ण चेतावनी: जल निकासी निर्वहन सीमाएं शुरू की गईं।",
+      village_news: "सहकारी घोषणाएं",
+      coop_1_title: "नहर जल आवंटन रोटेशन",
+      coop_1_desc: "गुरुवार सुबह 6 बजे से उत्तर क्षेत्र के खेतों में पानी की आपूर्ति की जाएगी।",
+      emergency_title: "आपातकालीन मोड",
+      emergency_subtitle: "एक-टैप एसओएस और आपदा सहायता निर्देश",
+      sos_triggered: "एसओएस सक्रिय! लाइव लोकेशन भेजी गई।",
+      sos_helper_txt: "आपदा सहायता टीम के साथ लाइव लोकेशन साझा करने के लिए बटन दबाएं",
+      emergency_contacts: "आपातकालीन संपर्क",
+      contact_agri_office: "मंड्या कृषि केंद्र",
+      distance_agri: "जिला विस्तार अधिकारी & bull; 4.2 किमी",
+      contact_shelter: "हुलिकेरे राहत आश्रय",
+      distance_shelter: "आपदा सामुदायिक हॉल & bull; 1.2 किमी",
+      offline_guide_title: "ऑफ़लाइन सुरक्षा प्रक्रियाएं",
+      offline_guide_desc: "ये बचाव निर्देश मोबाइल टावर बंद होने की स्थिति में भी उपलब्ध रहेंगे।",
+      impact_title: "प्रभाव ट्रैकर",
+      impact_subtitle: "अनुकूलन कार्यों के माध्यम से बचाई गई कार्बन और संसाधन",
+      co2_saved_lbl: "CO₂ की रोकथाम",
+      water_saved_lbl: "पानी की बचत",
+      streak_title: "5 सप्ताह का सिलसिला!",
+      streak_desc: "मिट्टी के स्वास्थ्य की रक्षा के लिए आपने साप्ताहिक जलवायु क्रियाएं पूरी कीं।",
+      badges_title: "अर्जित बैज",
+      badge_1: "इको किसान",
+      badge_2: "जल रक्षक",
+      badge_3: "सलाहकार मददगार",
+      badge_4: "चैंपियन",
+      profile_title: "किसान प्रोफ़ाइल",
+      profile_subtitle: "अपनी प्लेटफ़ॉर्म सेटिंग्स को व्यक्तिगत बनाएं",
+      profile_role: "कृषि सदस्य 2024 से",
+      preferred_lang: "सिस्टम भाषा",
+      dark_mode: "डार्क मोड",
+      location_settings_title: "स्थान सेटिंग्स",
+      trigger_sos_menu: "एसओएस आपातकाल सक्रिय करें",
+      gov_schemes: "सक्रिय सरकारी योजनाएं",
+      scheme_1_title: "पीएम कृषि सिंचाई योजना",
+      scheme_1_desc: "शुष्क भूमि के लिए ड्रिप सिंचाई व्यवस्था पर 80% सब्सिडी प्रदान करती है।",
+      apply_now: "अभी आवेदन करें",
+      logout: "लॉगआउट",
+      report_sheet_title: "स्थानीय खतरे की रिपोर्ट करें",
+      hazard_type: "खतरे का प्रकार",
+      hazard_pest: "कीट का आक्रमण",
+      hazard_water: "पानी की कमी",
+      hazard_flood: "बाढ़ की चेतावनी",
+      hazard_location: "स्थान विवरण",
+      hazard_desc: "विवरण",
+      submit_report: "चेतावनी सबमिट करें",
+      notifications_title: "सक्रिय जलवायु सलाह",
+      alert_notif_1_title: "भारी वर्षा की चेतावनी (मंड्या क्षेत्र)",
+      alert_notif_1_desc: "अगले 24 घंटों में 45 मिमी से अधिक बारिश होने की संभावना। नालियों को साफ करें।",
+      alert_notif_2_title: "कीट चेतावनी: फॉल आर्मीवॉर्म",
+      alert_notif_2_desc: "श्रीरंगपट्टनम गांव में देखा गया। धब्बे दिखने पर नीम के अर्क का छिड़काव करें।"
+    },
+    kn: {
+      splash_tagline: "ಮುನ್ಸೂಚನೆಗಳನ್ನು ಕೃಷಿ ನಿರ್ಧಾರಗಳಾಗಿ ಪರಿವರ್ತಿಸಿ",
+      get_started: "ಪ್ರಾರಂಭಿಸಿ",
+      onboard_1_title: "ಹವಾಮಾನ ಸವಾಲುಗಳು",
+      onboard_1_desc: "ಹವಾಮಾನ ಬದಲಾಗುತ್ತಿದೆ. ನಿಮ್ಮ ನಿರ್ಧಾರಗಳೂ ಬದಲಾಗಬೇಕು.",
+      onboard_2_title: "AI ಶಿಫಾರಸುಗಳು",
+      onboard_2_desc: "ಹವಾಮಾನ ದತ್ತಾಂಶದ ಆಧಾರದ ಮೇಲೆ ವೈಯಕ್ತಿಕಗೊಳಿಸಿದ ಕೃಷಿ ಸಲಹೆ ಪಡೆಯಿರಿ.",
+      onboard_3_title: "ಸಾಮುದಾಯಿಕ ಮಾಹಿತಿ",
+      onboard_3_desc: "Stay informed through nearby farmer reports.",
+      continue: "ಮುಂದುವರೆಯಿರಿ",
+      login_title: "ಫೋನ್ ಪರಿಶೀಲಿಸಿ",
+      login_subtitle: "ಪ್ರಾರಂಭಿಸಲು ನಿಮ್ಮ ಮೊಬೈಲ್ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ",
+      phone_number: "ಮೊಬೈಲ್ ಸಂಖ್ಯೆ",
+      get_otp: "OTP ಪಡೆಯಿರಿ",
+      enter_otp: "4-ಅಂಕಿಯ OTP ನಮೂದಿಸಿ",
+      verify_login: "ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಲಾಗಿನ್ ಮಾಡಿ",
+      or: "ಅಥವಾ",
+      google_login: "ಗೂಗಲ್ ಮೂಲಕ ಮುಂದುವರೆಯಿರಿ",
+      guest_mode: "ಅತಿಥಿಯಾಗಿ ಅನ್ವೇಷಿಸಿ",
+      greeting: "ಶುಭೋದಯ, ರಮೇಶ್",
+      location: "ಮಂಡ್ಯ, ಕರ್ನಾಟಕ",
+      outlook_title: "ಇಂದಿನ ಕೃಷಿ ದೃಷ್ಟಿಕೋನ",
+      updated_time: "10 ನಿಮಿಷಗಳ ಹಿಂದೆ ನವೀಕರಿಸಲಾಗಿದೆ",
+      risk_label: "ಮಧ್ಯಮ",
+      overall_risk: "ಒಟ್ಟಾರೆ ಹವಾಮಾನ ಅಪಾಯ",
+      risk_desc: "ಬೆಳೆ ಸುರಕ್ಷತೆಗಾಗಿ ಇಂದು ಭಾಗಶಃ ಹೊಂದಾಣಿಕೆಗಳ ಅಗತ್ಯವಿದೆ.",
+      rain_risk: "ಮಳೆ ಅಪಾಯ",
+      heat_stress: "ಶಾಖದ ಒತ್ತಡ",
+      water_stress: "ನೀರಿನ ಒತ್ತಡ",
+      recommended_actions: "ಶಿಫಾರಸು ಮಾಡಿದ ಕ್ರಮಗಳು",
+      action_1: "ನೀರಾವರಿಯನ್ನು 2 ದಿನ ಮುಂದೂಡಿ",
+      action_2: "ಶುಕ್ರವಾರದ ಮೊದಲು ಟೊಮೆಟೊ ಕೊಯ್ಲು ಮಾಡಿ",
+      action_3: "ನಾಳೆ ಕೀಟನಾಶಕ ಸಿಂಪಡಿಸುವುದನ್ನು ತಪ್ಪಿಸಿ",
+      community_alert_title: "ಸಾಮುದಾಯಿಕ ಎಚ್ಚರಿಕೆ",
+      community_alert_desc: "ಹತ್ತಿರದ ರೈತರಿಂದ ಫಾಲ್ ಆರ್ಮಿವರ್ಮ್ ಕೀಟಬಾಧೆ ವರದಿಯಾಗಿದೆ.",
+      weather_summary: "ಹವಾಮಾನ ವಿವರ",
+      temp: "ತಾಪಮಾನ",
+      humidity: "ಆರ್ದ್ರತೆ",
+      wind: "ಗಾಳಿ ವೇಗ",
+      rain_prob: "ಮಳೆಯ ಸಾಧ್ಯತೆ",
+      tab_home: "ಮುಖಪುಟ",
+      tab_assistant: "ಸಲಹೆಗಾರ",
+      tab_calendar: "ಕ್ಯಾಲೆಂಡರ್",
+      tab_community: "ಸಮುದಾಯ",
+      tab_profile: "ಪ್ರೊಫೈಲ್",
+      advisor_header_title: "AI ಕೃಷಿ ಸಲಹೆಗಾರ",
+      advisor_header_desc: "ನಿಮ್ಮ ಕೃಷಿ ಸಹಾಯಕ",
+      chat_welcome: "ನಮಸ್ಕಾರ ರಮೇಶ್! ನಾನು ಮಂಡ್ಯ ಜಿಲ್ಲೆಯ ಮಳೆ ಎಚ್ಚರಿಕೆಗಳನ್ನು ವಿಶ್ಲೇಷಿಸಿದ್ದೇನೆ. ಬೆಳೆ ರಕ್ಷಿಸಲು ಇಂದು ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಲಿ?",
+      prompt_1: "ನಾಳೆಯ ಮಳೆಯಿಂದ ಟೊಮೆಟೊ ಹೂವುಗಳಿಗೆ ಹಾನಿಯಾಗುತ್ತದೆಯೇ?",
+      prompt_2: "ನಾನು ಇಂದು ನೀರಾವರಿ ಮಾಡಬೇಕೇ?",
+      prompt_3: "ಕೀಟನಾಶಕ ಸಿಂಪಡಿಸುವಿಕೆಯ ಶಿಫಾರಸುಗಳು",
+      calendar_title: "ಬೆಳೆ ಕ್ಯಾಲೆಂಡರ್",
+      calendar_subtitle: "ನಿಮ್ಮ ಫಾರ್ಮ್‌ಗಾಗಿ ಸ್ಮಾರ್ಟ್ ಕೆಲಸದ ಸಂಘಟಕ",
+      cal_task_1: "ನೀರಾವರಿ: ನೀರುಣಿಸುವುದನ್ನು ಮುಂದೂಡಿ",
+      cal_task_1_desc: "ಭಾರೀ ಮಳೆಯ ಮುನ್ಸೂಚನೆ. ಸ್ವಯಂಚಾಲಿತ ಗೇಟ್ ಮುಚ್ಚಲಾಗಿದೆ.",
+      cal_task_2: "ಎಲೆಗಳ ಪೋಷಕಾಂಶ ಸಿಂಪಡಣೆ",
+      cal_task_2_desc: "ಹೂವು ಉದುರುವುದನ್ನು ತಡೆಯಲು ಟೊಮೆಟೊ ಹೂವುಗಳಿಗೆ ಕ್ಯಾಲ್ಸಿಯಂ ಬೋರಾನ್ ಸಿಂಪಡಿಸಿ.",
+      cal_task_3: "ರೋಗ ಅಪಾಯ ತಪಾಸಣೆ",
+      cal_task_3_desc: "ಟೊಮೆಟೊ ಕೆಳಗಿನ ಎಲೆಗಳಲ್ಲಿ ಕಂದು ಬಣ್ಣದ ಚುಕ್ಕೆಗಳಿವೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಿ.",
+      harvest_window_title: "ಅತ್ಯುತ್ತಮ ಟೊಮೆಟೊ ಕೊಯ್ಲು ಅವಧಿ",
+      harvest_window_desc: "ಜೂನ್ 12 - ಜೂನ್ 15. ನಿರೀಕ್ಷಿತ ಇಳುವರಿ ಆಪ್ಟಿಮೈಸೇಶನ್: +15%.",
+      risk_dash_title: "ಹವಾಮಾನ ಅಪಾಯಗಳು",
+      risk_dash_subtitle: "ಟೊಮೆಟೊ ಬೆಳೆಗೆ ವೈಜ್ಞಾನಿಕ ಅಪಾಯದ ವಿಶ್ಲೇಷಣೆ",
+      risk_item_1: "ಭಾರೀ ಮಳೆಯ ಅಪಾಯ",
+      risk_item_1_detail: "ಅತಿಯಾದ ನೀರು ನಿಲ್ಲುವಿಕೆಯಿಂದ ಹೂವು ಹಾನಿ ಮತ್ತು ಬೆಳೆ ಕೊಳೆಯುವ 73% ಅಪಾಯವಿದೆ. ತಕ್ಷಣ ಚರಂಡಿಗಳನ್ನು ಸ್ವಚ್ಛಗೊಳಿಸಿ ಮತ್ತು ಬೇರಿನ ಬಲವರ್ಧನೆಗೆ ಎಲೆಗಳಿಗೆ ಕ್ಯಾಲ್ಸಿಯಂ ಸಿಂಪಡಿಸಿ.",
+      risk_item_2: "ನೀರಿನ ಕೊರತೆ ಮತ್ತು ಒತ್ತಡ",
+      risk_item_2_detail: "ಮಣ್ಣು ಒಣಗುವ 61% ಅಪಾಯ. ಹನಿ ನೀರಾವರಿಗೆ ಬದಲಾಯಿಸಿ. ಆವಿಯಾಗುವಿಕೆಯನ್ನು ಕಡಿಮೆ ಮಾಡಲು ಸಂಜೆ 6 ರ ನಂತರ ನೀರುಣಿಸಿ.",
+      risk_item_3: "ಬಿಸಿಗಾಳಿಯ ಒತ್ತಡ",
+      risk_item_3_detail: "ಪರಾಗ ಬಂಜೆತನದ 48% ಅಪಾಯವಿದೆ. ಬೇರುಗಳ ತಾಪಮಾನವನ್ನು ತಂಪಾಗಿಸಲು ಮಣ್ಣನ್ನು ಒಣ ಹುಲ್ಲಿನಿಂದ ಮುಚ್ಚಿಡಿ.",
+      diag_title: "ಬೆಳೆ ರೋಗ ಪತ್ತೆ",
+      diag_subtitle: "ಕ್ಯಾಮೆರಾ ಡಯಾಗ್ನೋಸ್ಟಿಕ್ಸ್ ಬಳಸಿ ತ್ವರಿತ ಎಲೆ ವಿಶ್ಲೇಷಣೆ",
+      scan_leaf: "ಎಲೆ ವಿಶ್ಲೇಷಿಸಿ",
+      scanning_status: "ಎಲೆಯನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗುತ್ತಿದೆ...",
+      disease_name: "ಅರ್ಲಿ ಬ್ಲೈಟ್ (ಟೊಮೆಟೊ)",
+      confidence: "92% ನಿಖರತೆ",
+      cause_lbl: "ಕಾರಣ",
+      disease_cause: "ಆಲ್ಟರ್ನೇರಿಯಾ ಸೋಲಾನಿ ಶಿಲೀಂಧ್ರ, 48 ಗಂಟೆಗಳ ಕಾಲ ಆರ್ದ್ರತೆ 75% ಮೀರಿದಾಗ ಸಕ್ರಿಯಗೊಳ್ಳುತ್ತದೆ.",
+      treatment_title: "ಸಾವಯವ ಚಿಕಿತ್ಸೆ ಶಿಫಾರಸು",
+      treatment_desc: "ಸೋಂಕಿತ ಎಲೆಗಳನ್ನು ಕತ್ತರಿಸಿ ತಕ್ಷಣ ತಾಮ್ರದ ಶಿಲೀಂಧ್ರನಾಶಕ ಸಿಂಪಡಿಸಿ. ಗಾಳಿಯಾಡಲು ಗಿಡಗಳ ನಡುವೆ ಅಂತರವನ್ನು ಹೆಚ್ಚಿಸಿ.",
+      risk_spread: "ಹರಡುವ ಅಪಾಯ",
+      nearby_cases: "ಹತ್ತಿರದ ಪ್ರಕರಣಗಳು",
+      sim_title: "ಹವಾಮಾನ ಸಿಮ್ಯುಲೇಟರ್",
+      sim_subtitle: "ಹವಾಮಾನ ಬದಲಾವಣೆಗಳ ಆಧಾರದ ಮೇಲೆ ಭವಿಷ್ಯದ ಬೆಳೆ ಇಳುವರಿಯನ್ನು ಅನುಕರಿಸಿ",
+      sim_crop: "ಬೆಳೆಯನ್ನು ಆರಿಸಿ",
+      crop_tomato: "ಟೊಮೆಟೊ",
+      crop_maize: "ಮೆಕ್ಕೆಜೋಳ",
+      crop_rice: "ಭತ್ತ",
+      sim_rain: "ಮಳೆಯಲ್ಲಿ ಬದಲಾವಣೆ",
+      sim_temp: "ತಾಪಮಾನ ಏರಿಕೆ",
+      run_simulation: "ಸಿಮ್ಯುಲೇಶನ್ ರಚಿಸಿ",
+      simulation_results: "ಸಿಮ್ಯುಲೇಶನ್ ಫಲಿತಾಂಶಗಳು",
+      exp_yield: "ನಿರೀಕ್ಷಿತ ಇಳುವರಿ",
+      water_requirement: "ನೀರಿನ ಅವಶ್ಯಕತೆ",
+      profit_impact: "ನಿವ್ವಳ ಲಾಭದ ಮೇಲಿನ ಪರಿಣಾಮ",
+      profit_loss: "ನಿರೀಕ್ಷಿತ ನಷ್ಟ: -15%",
+      adaptive_rec: "ಶಿಫಾರಸು ಮಾಡಿದ ಕ್ರಮಗಳು",
+      adapt_1: "ಮಣ್ಣಿನ ತಾಪಮಾನವನ್ನು ಕಾಪಾಡಲು ಒಣ ಮಲ್ಚಿಂಗ್ ವಿಧಾನವನ್ನು ಅಳವಡಿಸಿ.",
+      adapt_2: "ಶಾಖ ನಿರೋಧಕ ಬೀಜಗಳನ್ನು ಬಳಸಿ (ಉದಾಹರಣೆಗೆ, ಅರ್ಕಾ ರಕ್ಷಕ್).",
+      adapt_3: "ನೀರಿನ ಆವಿಯಾಗುವಿಕೆಯನ್ನು ತಡೆಯಲು ಸೂಕ್ಷ್ಮ ತುಂತುರು ನೀರಾವರಿ ಅಳವಡಿಸಿ.",
+      community_title: "ಸಾಮುದಾಯಿಕ ಮಾಹಿತಿ",
+      community_subtitle: "ಘಟನೆಗಳನ್ನು ವರದಿ ಮಾಡಿ ಮತ್ತು ಸ್ಥಳೀಯ ಸುರಕ್ಷತಾ ಕ್ರಮಗಳನ್ನು ಸಂಘಟಿಸಿ",
+      report_incident_btn: "ಸಮಸ್ಯೆಯನ್ನು ವರದಿ ಮಾಡಿ",
+      community_feed: "ಇತ್ತೀಚಿನ ಸಮುದಾಯ ವರದಿಗಳು",
+      feed_report_1: "ಕೀಟಬಾಧೆ: ಫಾಲ್ ಆರ್ಮಿವರ್ಮ್",
+      village_dash_title: "ಗ್ರಾಮ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
+      village_dash_subtitle: "ಹುಲಿಕೆರೆ ಗ್ರಾಮದ ಸಹಕಾರಿ ವಿಶ್ಲೇಷಣೆ",
+      village_score_lbl: "ಹವಾಮಾನ ಸ್ಕೋರ್",
+      village_active_alerts: "ಸಕ್ರಿಯ ಎಚ್ಚರಿಕೆಗಳು",
+      village_urgent: "ತುರ್ತು ಕ್ರಮ",
+      village_water_lbl: "ಗ್ರಾಮ ನೀರಾವರಿ ಸಂಗ್ರಹಣೆ",
+      village_capacity: "ಹುಲಿಕೆರೆ ಕೆರೆ ಸಾಮರ್ಥ್ಯ",
+      village_water_warning: "ಪ್ರಮುಖ ಎಚ್ಚರಿಕೆ: ನೀರು ಬಿಡುಗಡೆ ಮಿತಿಗಳನ್ನು ಪ್ರಾರಂಭಿಸಲಾಗಿದೆ.",
+      village_news: "ಸಹಕಾರಿ ಸಮಿತಿ ಪ್ರಕಟಣೆಗಳು",
+      coop_1_title: "ಕಾಲುವೆ ನೀರು ಹಂಚಿಕೆ ಸರದೀಕರಣ",
+      coop_1_desc: "ಗುರುವಾರ ಬೆಳಿಗ್ಗೆ 6 ರಿಂದ ಉತ್ತರ ವಲಯದ ಕೃಷಿ ಭೂಮಿಗೆ ನೀರು ಸರಬರಾಜು ಮಾಡಲಾಗುತ್ತದೆ.",
+      emergency_title: "ತುರ್ತು ಮೋಡ್",
+      emergency_subtitle: "ಒಂದೇ ಟ್ಯಾಪ್‌ನಲ್ಲಿ SOS ಮತ್ತು ವಿಪತ್ತು ನಿರ್ವಹಣೆ ನೆರವು",
+      sos_triggered: "SOS ಸಕ್ರಿಯಗೊಂಡಿದೆ! ಲೈವ್ ಸ್ಥಳವನ್ನು ರವಾನಿಸಲಾಗಿದೆ.",
+      sos_helper_txt: "ವಿಪತ್ತು ನಿರ್ವಹಣಾ ತಂಡದೊಂದಿಗೆ ಲೈವ್ ಸ್ಥಳವನ್ನು ಹಂಚಿಕೊಳ್ಳಲು ಬಟನ್ ಒತ್ತಿರಿ",
+      emergency_contacts: "ತುರ್ತು ಸಂಪರ್ಕಗಳು",
+      contact_agri_office: "ಮಂಡ್ಯ ಕೃಷಿ ಕೇಂದ್ರ",
+      distance_agri: "ಜಿಲ್ಲಾ ವಿಸ್ತರಣಾಧಿಕಾರಿ & bull; 4.2 ಕಿಮೀ",
+      contact_shelter: "ಹುಲಿಕೆರೆ ಪರಿಹಾರ ಆಶ್ರಯ",
+      distance_shelter: "ವಿಪತ್ತು ಸಮುದಾಯ ಭವನ & bull; 1.2 ಕಿಮೀ",
+      offline_guide_title: "ಆಫ್‌ಲೈನ್ ಸುರಕ್ಷತಾ ವಿಧಾನಗಳು",
+      offline_guide_desc: "ಮೊಬೈಲ್ ಟವರ್‌ಗಳು ಕಾರ್ಯನಿರ್ವಹಿಸದಿದ್ದರೂ ಈ ರಕ್ಷಣಾ ಮಾರ್ಗಸೂಚಿಗಳು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಲಭ್ಯವಿರುತ್ತವೆ.",
+      impact_title: "ಪರಿಣಾಮ ಟ್ರ್ಯಾಕರ್",
+      impact_subtitle: "ಹವಾಮಾನ ಕ್ರಮಗಳ ಮೂಲಕ ಉಳಿಸಲಾದ ಇಂಗಾಲ ಮತ್ತು ಸಂಪನ್ಮೂಲಗಳು",
+      co2_saved_lbl: "CO₂ ತಡೆಗಟ್ಟುವಿಕೆ",
+      water_saved_lbl: "ನೀರಿನ ಉಳಿತಾಯ",
+      streak_title: "5 ವಾರಗಳ ಸತತ ಯಶಸ್ಸು!",
+      streak_desc: "ಮಣ್ಣಿನ ಆರೋಗ್ಯ ರಕ್ಷಿಸಲು ನೀವು ವಾರಕ್ಕೊಮ್ಮೆ ಹವಾಮಾನ ಕ್ರಮಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಪೂರ್ಣಗೊಳಿಸಿದ್ದೀರಿ.",
+      badges_title: "ಗಳಿಸಿದ ಬ್ಯಾಡ್ಜ್‌ಗಳು",
+      badge_1: "ಪರಿಸರ ರೈತ",
+      badge_2: "ಜಲ ರಕ್ಷಕ",
+      badge_3: "ಸಲಹೆಗಾರ ಸಹಾಯಕ",
+      badge_4: "ಚಾಂಪ್ಸ್",
+      profile_title: "ರೈತರ ಪ್ರೊಫೈಲ್",
+      profile_subtitle: "ನಿಮ್ಮ ಪ್ಲಾಟ್‌ಫಾರ್ಮ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ವೈಯಕ್ತಿಕಗೊಳಿಸಿ",
+      profile_role: "ಕೃಷಿ ಸದಸ್ಯ 2024 ರಿಂದ",
+      preferred_lang: "ಸಿಸ್ಟಮ್ ಭಾಷೆ",
+      dark_mode: "ಡಾರ್ಕ್ ಮೋಡ್",
+      location_settings_title: "ಸ್ಥಳದ ಸೆಟ್ಟಿಂಗ್‌ಗಳು",
+      trigger_sos_menu: "SOS ತುರ್ತುಸ್ಥಿತಿಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ",
+      gov_schemes: "ಸಕ್ರಿಯ ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು",
+      scheme_1_title: "PM ಕೃಷಿ ಸಿಂಚಾಯಿ ಯೋಜನೆ",
+      scheme_1_desc: "ಒಣಭೂಮಿಗೆ ಹನಿ ನೀರಾವರಿ ಅಳವಡಿಸಲು 80% ಸಬ್ಸಿಡಿ ನೀಡುತ್ತದೆ.",
+      apply_now: "ಈಗಲೇ ಅರ್ಜಿ ಸಲ್ಲಿಸಿ",
+      logout: "ಲಾಗಿನ್‌ನಿಂದ ಹೊರಬನ್ನಿ",
+      report_sheet_title: "ಸ್ಥಳೀಯ ಅಪಾಯವನ್ನು ವರದಿ ಮಾಡಿ",
+      hazard_type: "ಅಪಾಯದ ಪ್ರಕಾರ",
+      hazard_pest: "ಕೀಟಗಳ ದಾಳಿ",
+      hazard_water: "ನೀರಿನ ಅಭಾವ",
+      hazard_flood: "ಪ್ರವಾಹದ ಎಚ್ಚರಿಕೆ",
+      hazard_location: "ಸ್ಥಳದ ವಿವರಗಳು",
+      hazard_desc: "ವಿವರಣೆ",
+      submit_report: "ಎಚ್ಚರಿಕೆ ಸಲ್ಲಿಸಿ",
+      notifications_title: "ಸಕ್ರಿಯ ಹವಾಮಾನ ಸಲಹೆಗಳು",
+      alert_notif_1_title: "ಭಾರೀ ಮಳೆಯ ಎಚ್ಚರಿಕೆ (ಮಂಡ್ಯ ಪ್ರದೇಶ)",
+      alert_notif_1_desc: "ಮುಂದಿನ 24 ಗಂಟೆಗಳಲ್ಲಿ 45 ಮಿಮೀಗಿಂತ ಹೆಚ್ಚು ಮಳೆಯಾಗುವ ಸಾಧ್ಯತೆ. ಚರಂಡಿಗಳನ್ನು ಸ್ವಚ್ಛಗೊಳಿಸಿ.",
+      alert_notif_2_title: "ಕೀಟ ಎಚ್ಚರಿಕೆ: ಫಾಲ್ ಆರ್ಮಿವರ್ಮ್",
+      alert_notif_2_desc: "ಶ್ರೀರಂಗಪಟ್ಟಣ ಗ್ರಾಮದಲ್ಲಿ ಪತ್ತೆಯಾಗಿದೆ. ಚುಕ್ಕೆಗಳು ಕಂಡುಬಂದರೆ ಬೇವಿನ ಹಿಂಡಿ ರಸ ಸಿಂಪಡಿಸಿ."
+    }
+  };
+
+  let currentLang = 'en';
+
+  // Apply translations to data-i18n elements
+  function setLanguage(lang) {
+    currentLang = lang;
+    
+    // Update button states on Splash Screen
+    const buttons = document.querySelectorAll('.lang-btn');
+    buttons.forEach(btn => {
+      if (btn.innerText.toLowerCase().includes('english') && lang === 'en') btn.classList.add('active');
+      else if (btn.innerText.includes('हिंदी') && lang === 'hi') btn.classList.add('active');
+      else if (btn.innerText.includes('ಕನ್ನಡ') && lang === 'kn') btn.classList.add('active');
+      else btn.classList.remove('active');
+    });
+
+    // Update Dropdown in Profile if it exists
+    const profileSelect = document.getElementById('profile-lang-select');
+    if (profileSelect) profileSelect.value = lang;
+
+    // Apply translations
+    const elements = document.querySelectorAll('[data-i18n]');
+    elements.forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (key === 'location') return; // Skip translating the custom user location
+      if (translations[lang] && translations[lang][key]) {
+        el.innerText = translations[lang][key];
+      }
+    });
+
+    // Update dynamic button texts based on language
+    const nextBtn = document.getElementById('onboard-next-btn');
+    if (nextBtn) {
+      if (activeSlide === 2) {
+        nextBtn.innerText = translations[lang]['get_started'];
+      } else {
+        nextBtn.innerText = translations[lang]['continue'];
+      }
+    }
+
+    // Update chat welcome message directly if chat is empty except for welcome
+    const chatMsgBox = document.getElementById('chat-messages-box');
+    if (chatMsgBox && chatMsgBox.children.length === 1) {
+      chatMsgBox.children[0].innerHTML = `<span data-i18n="chat_welcome">${translations[lang]['chat_welcome']}</span>`;
+    }
+
+    // Dynamic calendar tasks update on language change
+    const activeDayEl = document.querySelector('.cal-day.active');
+    if (activeDayEl) {
+      const dayNumSpan = activeDayEl.querySelector('.cal-day-num');
+      if (dayNumSpan) {
+        renderCalendarTasks(parseInt(dayNumSpan.innerText));
+      }
+    }
+  }
+
+  // 10. Community Map Pins and Interactive Detail Loading
+  const pinDetails = {
+    pest: {
+      type: "pest",
+      title: "Fall Armyworm Spreading",
+      location: "Hulikere Border (1.2km away)",
+      priority: "High Priority",
+      priorityClass: "pill-red",
+      desc: "Tomato crop leaves show extensive skeletonization. Spray Neem oil or organic insecticide immediately.",
+      upvotes: 24,
+      comments: 5,
+      x: 210,
+      y: 160,
+      time: "2 hours ago"
+    },
+    water: {
+      type: "water",
+      title: "Canal Leakage & Shortage",
+      location: "Mandya Sector 2 (500m away)",
+      priority: "Medium Priority",
+      priorityClass: "pill-yellow",
+      desc: "Main distribution pipe leaking. Water levels dropping in North plots. Irrigation board notified.",
+      upvotes: 18,
+      comments: 2,
+      x: 100,
+      y: 200,
+      time: "4 hours ago"
+    },
+    flood: {
+      type: "flood",
+      title: "High Flood Logged Zone",
+      location: "Lowland Plots (2.1km away)",
+      priority: "Critical Priority",
+      priorityClass: "pill-red",
+      desc: "Excessive flooding due to lake discharge overflow. Avoid driving tractors near the main canal roads.",
+      upvotes: 42,
+      comments: 11,
+      x: 150,
+      y: 60,
+      time: "1 day ago"
+    }
+  };
+
+  let activePinId = '';
+  let incidentCount = 0;
+  let lastMapTapCoords = { x: 180, y: 180 };
+
+  function renderMapPins() {
+    const container = document.getElementById('map-pins-container');
+    if (!container) return;
+
+    let html = '';
+    for (const key in pinDetails) {
+      const pin = pinDetails[key];
+      let color = 'var(--color-yellow)';
+      let rbgColor = 'rgba(217, 119, 6, 0.2)';
+      if (pin.type === 'water') {
+        color = 'var(--color-blue)';
+        rbgColor = 'rgba(46, 117, 182, 0.2)';
+      } else if (pin.type === 'flood') {
+        color = 'var(--color-red)';
+        rbgColor = 'rgba(156, 29, 24, 0.2)';
+      }
+
+      html += `
+        <g class="map-pin" id="pin-${key}" onclick="event.stopPropagation(); showMapPinDetail('${key}')" style="cursor:pointer;">
+          <circle cx="${pin.x}" cy="${pin.y}" r="16" fill="${rbgColor}"></circle>
+          <path d="M${pin.x},${pin.y - 15} C${pin.x - 8},${pin.y - 15} ${pin.x - 14},${pin.y - 9} ${pin.x - 14},${pin.y - 1} C${pin.x - 14},${pin.y + 9} ${pin.x},${pin.y + 21} ${pin.x},${pin.y + 21} C${pin.x},${pin.y + 21} ${pin.x + 14},${pin.y + 9} ${pin.x + 14},${pin.y - 1} C${pin.x + 14},${pin.y - 9} ${pin.x + 8},${pin.y - 15} ${pin.x},${pin.y - 15} Z" fill="${color}"></path>
+          <circle cx="${pin.x}" cy="${pin.y - 5}" r="4.5" fill="white"></circle>
+        </g>
+      `;
+    }
+    container.innerHTML = html;
+  }
+
+  function renderCommunityFeed() {
+    const container = document.getElementById('community-feed-container');
+    if (!container) return;
+
+    let html = '';
+    const keys = Object.keys(pinDetails).reverse();
+    keys.forEach(key => {
+      const pin = pinDetails[key];
+      let icon = 'bug_report';
+      let iconBg = '#FFF3CD';
+      let iconColor = 'var(--color-yellow)';
+      if (pin.type === 'water') {
+        icon = 'water_drop';
+        iconBg = '#E2F0FD';
+        iconColor = 'var(--color-blue)';
+      } else if (pin.type === 'flood') {
+        icon = 'flood';
+        iconBg = '#FCE8E6';
+        iconColor = 'var(--color-red)';
+      }
+
+      html += `
+        <div class="card" onclick="showMapPinDetail('${key}')" style="cursor:pointer; display:flex; gap:12px; align-items:center; padding:12px; margin-bottom:10px;">
+          <div style="background:${iconBg}; width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; color:${iconColor};">
+            <span class="material-icons-round">${icon}</span>
+          </div>
+          <div style="flex:1;">
+            <h4 style="font-size:14px; margin-bottom:2px;">${pin.title}</h4>
+            <p style="font-size:11px;">Ramesh K. &bull; ${pin.time || 'Just now'} &bull; ${pin.location}</p>
+          </div>
+          <span class="material-icons-round" style="color:var(--color-gray-text);">chevron_right</span>
+        </div>
+      `;
+    });
+
+    container.innerHTML = html;
+  }
+
+  function showMapPinDetail(type) {
+    activePinId = type;
+    const detail = pinDetails[type];
+    if (!detail) return;
+
+    const pins = document.querySelectorAll('.map-pin');
+    pins.forEach(p => p.classList.remove('active'));
+    const targetPin = document.getElementById(`pin-${type}`);
+    if (targetPin) targetPin.classList.add('active');
+
+    document.getElementById('map-card-title').innerText = detail.title;
+    document.getElementById('map-card-location').innerText = detail.location;
+
+    const priorityPill = document.getElementById('map-card-priority');
+    priorityPill.innerText = detail.priority;
+    priorityPill.className = `pill ${detail.priorityClass}`;
+
+    document.getElementById('map-card-desc').innerText = detail.desc;
+    document.getElementById('map-card-upvotes').innerText = detail.upvotes;
+    document.getElementById('map-card-comments').innerText = `${detail.comments} Comments`;
+
+    document.getElementById('map-pin-card').style.display = 'block';
+  }
+
+  function upvoteIncident() {
+    if (!activePinId) return;
+    pinDetails[activePinId].upvotes++;
+    document.getElementById('map-card-upvotes').innerText = pinDetails[activePinId].upvotes;
+  }
+
+  // 11. Modal controllers (Bottom sheets)
+  function openBottomSheet(id) {
+    document.getElementById('bottom-sheet-backdrop').style.display = 'block';
+    document.getElementById(id).classList.add('open');
+  }
+
+  function closeBottomSheet() {
+    document.getElementById('bottom-sheet-backdrop').style.display = 'none';
+    const sheets = document.querySelectorAll('.bottom-sheet');
+    sheets.forEach(s => s.classList.remove('open'));
+  }
+
+  function openReportIncidentSheet() {
+    openBottomSheet('report-incident-sheet');
+  }
+
+  function triggerAlertBottomsheet() {
+    openBottomSheet('notification-alerts-sheet');
+  }
+
+  function submitNewIncident() {
+    const type = document.getElementById('new-hazard-type').value;
+    const location = document.getElementById('new-hazard-location').value;
+    const desc = document.getElementById('new-hazard-desc').value || "Incident reported by community.";
+
+    incidentCount++;
+    const newId = `custom_${type}_${incidentCount}`;
+
+    pinDetails[newId] = {
+      type: type,
+      title: type === 'pest' ? 'New Pest Alert' : (type === 'water' ? 'New Water Alert' : 'New Flood Alert'),
+      location: location,
+      priority: "Medium Priority",
+      priorityClass: "pill-yellow",
+      desc: desc,
+      upvotes: 1,
+      comments: 0,
+      x: lastMapTapCoords.x,
+      y: lastMapTapCoords.y,
+      time: "Just now"
+    };
+
+    closeBottomSheet();
+    renderMapPins();
+    renderCommunityFeed();
+    showMapPinDetail(newId);
+  }
+
+  // 2. Navigation State Router
+  const navTabs = ['screen-home', 'screen-advisor', 'screen-calendar', 'screen-community', 'screen-profile'];
+  
+  function showScreen(screenId) {
+    const screens = document.querySelectorAll('.screen');
+    screens.forEach(s => s.classList.remove('active'));
+
+    const target = document.getElementById(screenId);
+    if (target) target.classList.add('active');
+
+    // Manage bottom navigation visibility
+    const bottomNav = document.getElementById('bottom-nav');
+    if (screenId === 'screen-splash' || screenId === 'screen-onboarding' || screenId === 'screen-login') {
+      bottomNav.classList.add('d-none');
+    } else {
+      bottomNav.classList.remove('d-none');
+    }
+
+    // Sync active state in bottom navigation tabs
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => item.classList.remove('active'));
+    
+    if (screenId === 'screen-home') {
+      document.getElementById('tab-btn-home').classList.add('active');
+      animateRiskGauge(62);
+    } else if (screenId === 'screen-advisor') {
+      document.getElementById('tab-btn-advisor').classList.add('active');
+    } else if (screenId === 'screen-calendar') {
+      document.getElementById('tab-btn-calendar').classList.add('active');
+    } else if (screenId === 'screen-community') {
+      document.getElementById('tab-btn-community').classList.add('active');
+    } else if (screenId === 'screen-profile') {
+      document.getElementById('tab-btn-profile').classList.add('active');
+    }
+
+    // Update active state in Sidebar screen panel
+    const sidebarBtns = document.querySelectorAll('.sidebar-btn');
+    sidebarBtns.forEach(btn => btn.classList.remove('active'));
+    
+    if (screenId === 'screen-splash') document.getElementById('side-splash').classList.add('active');
+    else if (screenId === 'screen-onboarding') document.getElementById('side-onboard').classList.add('active');
+    else if (screenId === 'screen-login') document.getElementById('side-login').classList.add('active');
+    else if (screenId === 'screen-home') document.getElementById('side-home').classList.add('active');
+    else if (screenId === 'screen-advisor') document.getElementById('side-advisor').classList.add('active');
+    else if (screenId === 'screen-calendar') document.getElementById('side-calendar').classList.add('active');
+    else if (screenId === 'screen-risk') document.getElementById('side-risk').classList.add('active');
+    else if (screenId === 'screen-diagnosis') document.getElementById('side-diagnosis').classList.add('active');
+    else if (screenId === 'screen-simulator') document.getElementById('side-simulator').classList.add('active');
+    else if (screenId === 'screen-community') document.getElementById('side-community').classList.add('active');
+    else if (screenId === 'screen-village') document.getElementById('side-village').classList.add('active');
+    else if (screenId === 'screen-emergency') document.getElementById('side-emergency').classList.add('active');
+    else if (screenId === 'screen-impact') document.getElementById('side-impact').classList.add('active');
+    else if (screenId === 'screen-profile') document.getElementById('side-profile').classList.add('active');
+
+    // Run dynamic reset configurations on screen transition
+    resetScreenState(screenId);
+  }
+
+  function resetScreenState(screenId) {
+    if (screenId === 'screen-onboarding') {
+      activeSlide = 0;
+      document.querySelectorAll('.onboarding-slide').forEach((s, idx) => {
+        if (idx === 0) s.classList.add('active');
+        else s.classList.remove('active');
+      });
+      document.querySelectorAll('.dot').forEach((d, idx) => {
+        if (idx === 0) d.classList.add('active');
+        else d.classList.remove('active');
+      });
+      const btnText = translations[currentLang]['continue'];
+      document.getElementById('onboard-next-btn').innerText = btnText;
+    } else if (screenId === 'screen-login') {
+      document.getElementById('phone-entry-block').classList.remove('d-none');
+      document.getElementById('otp-entry-block').classList.add('d-none');
+      document.getElementById('farmer-otp').value = '';
+    } else if (screenId === 'screen-diagnosis') {
+      document.getElementById('diagnosis-results-card').style.display = 'none';
+      document.getElementById('leaf-scan-laser').style.display = 'none';
+      document.getElementById('scan-loading-txt').style.display = 'none';
+      document.getElementById('scan-trigger-btn').disabled = true;
+      document.getElementById('scan-trigger-btn').style.opacity = '0.5';
+      // Stop camera if running
+      stopLeafCamera();
+      // Reset viewport
+      document.getElementById('leaf-camera-feed').style.display = 'none';
+      document.getElementById('leaf-capture-canvas').style.display = 'none';
+      document.getElementById('leaf-preview-img').style.display = 'none';
+      document.getElementById('diag-placeholder').style.display = 'flex';
+      document.getElementById('leaf-file-input').value = '';
+    } else if (screenId === 'screen-emergency') {
+      sosActive = false;
+      document.getElementById('sos-countdown-msg').style.display = 'none';
+      clearInterval(flashInterval);
+      document.getElementById('phone-bezel-outer').classList.remove('sos-flashing');
+    } else if (screenId === 'screen-calendar') {
+      const activeDayEl = document.querySelector('.cal-day.active');
+      if (activeDayEl) {
+        const dayNumSpan = activeDayEl.querySelector('.cal-day-num');
+        if (dayNumSpan) {
+          renderCalendarTasks(parseInt(dayNumSpan.innerText));
+        }
+      } else {
+        renderCalendarTasks(4); // default to Tue 4
+      }
+    }
+  }
+
+  function navigateTab(screenId, element) {
+    showScreen(screenId);
+  }
+
+  function clickSidebarScreen(screenId, btnId) {
+    showScreen(screenId);
+    const sidebarBtns = document.querySelectorAll('.sidebar-btn');
+    sidebarBtns.forEach(btn => btn.classList.remove('active'));
+    document.getElementById(btnId).classList.add('active');
+  }
+
+  // 3. Splash Screen loader timer
+  setTimeout(() => {
+    document.getElementById('splash-loader').classList.add('d-none');
+    document.getElementById('splash-controls').classList.remove('d-none');
+  }, 1800);
+
+  // 4. Onboarding slide controls
+  let activeSlide = 0;
+  function nextOnboardingSlide() {
+    document.getElementById(`onboard-slide-${activeSlide}`).classList.remove('active');
+    document.getElementById(`onboard-dot-${activeSlide}`).classList.remove('active');
+    
+    activeSlide++;
+    
+    if (activeSlide < 3) {
+      document.getElementById(`onboard-slide-${activeSlide}`).classList.add('active');
+      document.getElementById(`onboard-dot-${activeSlide}`).classList.add('active');
+      if (activeSlide === 2) {
+        document.getElementById('onboard-next-btn').innerText = translations[currentLang]['get_started'];
+      } else {
+        document.getElementById('onboard-next-btn').innerText = translations[currentLang]['continue'];
+      }
+    } else {
+      showScreen('screen-login');
+    }
+  }
+
+  // 5. Login Flow simulation
+  function requestOTP() {
+    const phone = document.getElementById('farmer-phone').value;
+    if (phone.length < 10) return alert("Please enter a valid phone number");
+    
+    document.getElementById('phone-entry-block').classList.add('d-none');
+    document.getElementById('otp-entry-block').classList.remove('d-none');
+    
+    // Autofill simulated OTP
+    setTimeout(() => {
+      document.getElementById('farmer-otp').value = "4832";
+    }, 800);
+  }
+
+  function verifyOTP() {
+    showScreen('screen-home');
+  }
+
+  function loginGuest() {
+    showScreen('screen-home');
+  }
+
+  function simulateGoogleLogin() {
+    showScreen('screen-home');
+  }
+
+  // 6. Gauge Ring Animation
+  function animateRiskGauge(value) {
+    const ring = document.getElementById('risk-gauge-ring');
+    if (!ring) return;
+    const radius = ring.r.baseVal.value;
+    const circumference = 2 * Math.PI * radius;
+    const offset = circumference - (value / 100) * circumference;
+    
+    // Delayed animation to trigger smooth transition
+    setTimeout(() => {
+      ring.style.strokeDashoffset = offset;
+    }, 150);
+  }
+
+  // 7. Accordion toggle logic
+  function toggleAccordion(card) {
+    const isOpen = card.classList.contains('open');
+    const accordions = document.querySelectorAll('.accordion-card');
+    
+    // Close all
+    accordions.forEach(acc => {
+      acc.classList.remove('open');
+    });
+
+    // Toggle target
+    if (!isOpen) {
+      card.classList.add('open');
+    }
+  }
+
+  // 8. Leaf Scanner — Camera, Upload, Capture & Scan
+  let leafCameraStream = null;
+  let leafImageReady = false;
+
+  function startLeafCamera() {
+    const video = document.getElementById('leaf-camera-feed');
+    const placeholder = document.getElementById('diag-placeholder');
+    const preview = document.getElementById('leaf-preview-img');
+    const canvas = document.getElementById('leaf-capture-canvas');
+
+    // Hide other views
+    preview.style.display = 'none';
+    canvas.style.display = 'none';
+    placeholder.style.display = 'none';
+
+    // Request camera
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+        .then(stream => {
+          leafCameraStream = stream;
+          video.srcObject = stream;
+          video.style.display = 'block';
+          enableScanButton();
+        })
+        .catch(err => {
+          console.log('Camera access denied:', err);
+          placeholder.style.display = 'flex';
+          placeholder.querySelector('span:last-child').textContent = 'Camera unavailable. Please upload a photo instead.';
+        });
+    } else {
+      placeholder.style.display = 'flex';
+      placeholder.querySelector('span:last-child').textContent = 'Camera not supported. Please upload a photo.';
+    }
+  }
+
+  function stopLeafCamera() {
+    if (leafCameraStream) {
+      leafCameraStream.getTracks().forEach(track => track.stop());
+      leafCameraStream = null;
+    }
+    const video = document.getElementById('leaf-camera-feed');
+    video.srcObject = null;
+    video.style.display = 'none';
+    leafImageReady = false;
+  }
+
+  function handleLeafUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const preview = document.getElementById('leaf-preview-img');
+      const placeholder = document.getElementById('diag-placeholder');
+      const video = document.getElementById('leaf-camera-feed');
+      const canvas = document.getElementById('leaf-capture-canvas');
+
+      // Stop camera if running
+      stopLeafCamera();
+      video.style.display = 'none';
+      canvas.style.display = 'none';
+      placeholder.style.display = 'none';
+
+      preview.src = e.target.result;
+      preview.style.display = 'block';
+      leafImageReady = true;
+      enableScanButton();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function enableScanButton() {
+    const btn = document.getElementById('scan-trigger-btn');
+    btn.disabled = false;
+    btn.style.opacity = '1';
+  }
+
+  function captureAndScan() {
+    const video = document.getElementById('leaf-camera-feed');
+    const canvas = document.getElementById('leaf-capture-canvas');
+    const preview = document.getElementById('leaf-preview-img');
+
+    // If camera is live, capture a frame
+    if (leafCameraStream && video.style.display !== 'none') {
+      canvas.width = video.videoWidth || 320;
+      canvas.height = video.videoHeight || 240;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      canvas.style.display = 'block';
+      video.style.display = 'none';
+      stopLeafCamera();
+    }
+
+    // Run the scan animation
+    const laser = document.getElementById('leaf-scan-laser');
+    const loadText = document.getElementById('scan-loading-txt');
+    const triggerBtn = document.getElementById('scan-trigger-btn');
+    const results = document.getElementById('diagnosis-results-card');
+
+    results.style.display = 'none';
+    laser.style.display = 'block';
+    loadText.style.display = 'block';
+    triggerBtn.disabled = true;
+    triggerBtn.style.opacity = '0.5';
+
+    // Simulate AI analysis scan (2.8s)
+    setTimeout(() => {
+      laser.style.display = 'none';
+      loadText.style.display = 'none';
+      triggerBtn.disabled = false;
+      triggerBtn.style.opacity = '1';
+      results.style.display = 'block';
+    }, 2800);
+  }
+
+  // 9. Climate Simulator Math
+  function runSimulation() {
+    const rain = document.getElementById('sim-rain-select').value;
+    const temp = document.getElementById('sim-temp-select').value;
+    
+    const yieldVal = document.getElementById('sim-yield-val');
+    const waterVal = document.getElementById('sim-water-val');
+    const profitDesc = document.getElementById('sim-profit-desc');
+    const riskPill = document.getElementById('sim-risk-pill');
+
+    let calculatedYield = 0;
+    let calculatedWater = 0;
+    
+    if (rain === "-25") {
+      calculatedYield = -24 - Math.round(temp * 4);
+      calculatedWater = 30 + Math.round(temp * 6);
+    } else if (rain === "25") {
+      calculatedYield = -12 - Math.round(temp * 2);
+      calculatedWater = -10;
+    } else {
+      calculatedYield = 0 - Math.round(temp * 8);
+      calculatedWater = 10 + Math.round(temp * 10);
+    }
+
+    yieldVal.innerText = `${calculatedYield > 0 ? '+' : ''}${calculatedYield}%`;
+    yieldVal.style.color = calculatedYield < 0 ? 'var(--color-red)' : 'var(--color-green-primary)';
+    
+    waterVal.innerText = `${calculatedWater > 0 ? '+' : ''}${calculatedWater}%`;
+    waterVal.style.color = calculatedWater > 0 ? 'var(--color-blue)' : 'var(--color-green-primary)';
+
+    const profitPct = Math.round(calculatedYield * 0.8);
+    profitDesc.innerText = profitPct < 0 ? `Expected Loss: ${profitPct}%` : `Expected Gain: +${profitPct}%`;
+    profitDesc.style.color = profitPct < 0 ? 'var(--color-red)' : 'var(--color-green-primary)';
+
+    if (profitPct < -15) {
+      riskPill.innerText = "High Risk";
+      riskPill.className = "pill pill-red";
+    } else if (profitPct < 0) {
+      riskPill.innerText = "Moderate Risk";
+      riskPill.className = "pill pill-yellow";
+    } else {
+      riskPill.innerText = "Low Risk";
+      riskPill.className = "pill pill-green";
+    }
+
+    document.getElementById('sim-results').classList.remove('d-none');
+  }
+
+  // End of community map controller section
+
+  // 12. Interactive AI Chatbot — Keyword-Matching Response Engine
+  const chatResponses = {
+    en: {
+      greetings: { keywords: ['hi','hello','hey','good morning','good evening','namaste','namaskara'], response: "Hello Ramesh! 🌾 Welcome back. Today in Mandya: 28°C, 82% humidity, 73% rain probability. How can I help you with your farm today?", recs: ["Ask me about weather, crops, diseases, or irrigation.", "Citation: FarmCast AI Local Intelligence."] },
+      weather: { keywords: ['weather','rain','forecast','temp','temperature','climate','wind','storm','barish','maale'], response: "Current Mandya Weather: Temperature 28°C, Humidity 82%, Wind 12 km/h SW. Rain probability is 73% for the next 24 hours with expected 35mm precipitation. UV Index: Moderate.", recs: ["Delay any outdoor spraying until dry window opens Friday.", "Clear field drainage channels today.", "Cover harvested produce with tarpaulins.", "Citation: Indian Meteorological Dept (IMD) Mandya Station."] },
+      crop: { keywords: ['crop','paddy','ragi','sugarcane','tomato','harvest','yield','plant','seed','sow'], response: "Based on current climate conditions for Mandya: Tomato crops are at moderate risk due to high humidity (blossom drop risk). Paddy is in good standing with adequate water. Ragi harvest window opens next week if rain subsides.", recs: ["Harvest tomatoes before Friday rain event.", "Apply calcium foliar spray to strengthen tomato pedicels.", "Check the Crop Calendar for detailed scheduling.", "Citation: UAS Bangalore Agronomy Advisory."] },
+      disease: { keywords: ['disease','pest','leaf','blight','worm','bug','fungus','infection','roga','spot'], response: "⚠️ Alert: Fall Armyworm outbreak reported in Srirangapatna (4.2km from your farm). Current humidity (82%) also increases Early Blight risk for tomatoes. I recommend scanning your leaves immediately.", recs: ["Use the Disease Scanner (camera icon) to analyze leaf spots.", "Apply Neem Seed Kernel Extract as organic prevention.", "Avoid chemical spraying during rain — wait for dry window.", "Citation: UAS Dharwad Pest Control Handbook."] },
+      water: { keywords: ['water','irrigation','irrigate','drought','dry','niru','reservoir','lake','moisture'], response: "Soil moisture in your area: 76% (above optimal). Hulikere Lake reservoir is at 32% capacity. Given 73% rain probability tomorrow, irrigation is NOT recommended today.", recs: ["Postpone irrigation until Friday.", "Switch to drip irrigation to conserve water (saves ~40%).", "Check Village Dashboard for canal water rotation schedule.", "Citation: IMD + Karnataka Water Resources Dept."] },
+      emergency: { keywords: ['help','sos','emergency','danger','flood','cyclone','disaster'], response: "🚨 Emergency Mode: I can connect you to disaster support immediately. Mandya District Emergency Control Room: 08232-222333. Nearest relief shelter: Hulikere Community Hall (1.2km).", recs: ["Press the SOS button on the Emergency screen for live location sharing.", "Store emergency supplies: water, torch, documents in waterproof bag.", "Citation: NDMA Disaster Preparedness Guidelines."] },
+      village: { keywords: ['village','community','cooperative','gram','neighbor','nearby','farmer','panchayat'], response: "Village Dashboard: 847 active farmers in Mandya cluster. Hulikere Lake at 32% capacity. 3 community alerts active. Canal water rotation moves to North Sector on Thursday 6:00 AM.", recs: ["Check Community Map for nearby farmer reports.", "Report any local hazards via the Report button.", "Citation: Mandya District Cooperative Society."] },
+      scheme: { keywords: ['scheme','subsidy','government','yojana','sarkari','pm','kisan','loan','insurance'], response: "Active Government Schemes for Mandya farmers:\n1. PM Krishi Sinchayee Yojana — 80% subsidy on micro-drip irrigation\n2. PM Fasal Bima Yojana — Crop insurance enrollment open\n3. Karnataka Raitha Siri — Interest-free crop loans up to ₹3 lakh", recs: ["Apply for PMKSY through your nearest Krishi Kendra.", "Enrollment deadline for crop insurance: July 31st.", "Citation: Ministry of Agriculture & Karnataka State Portal."] },
+      calendar: { keywords: ['calendar','schedule','plan','when','date','week','month','season'], response: "Upcoming Crop Calendar Events:\n• Today: Monitor drainage (rain expected)\n• Thu: Canal water rotation — North Sector\n• Fri AM: Safe pesticide spray window (8-11 AM)\n• Next Week: Ragi harvest window opens\n• Jul 15: Paddy transplanting deadline", recs: ["Set reminders in the Crop Calendar screen.", "Adjust schedules based on weekly weather updates.", "Citation: UAS Bangalore Seasonal Advisory 2024."] }
+    },
+    hi: {
+      greetings: { keywords: ['hi','hello','hey','namaste','namaskar','pranam'], response: "नमस्ते रमेश! 🌾 आज मांड्या में: 28°C, आर्द्रता 82%, बारिश की संभावना 73%। मैं आपकी खेती में कैसे मदद कर सकता हूं?", recs: ["मुझसे मौसम, फसल, बीमारी या सिंचाई के बारे में पूछें।", "Citation: FarmCast AI"] },
+      weather: { keywords: ['weather','rain','mausam','barish','temp','tapman','thand','garmi','hawa'], response: "मांड्या मौसम: तापमान 28°C, आर्द्रता 82%, हवा 12 km/h दक्षिण-पश्चिम। अगले 24 घंटों में बारिश की 73% संभावना, अपेक्षित वर्षा 35mm।", recs: ["शुक्रवार तक छिड़काव टालें।", "खेत की नालियां साफ करें।", "Citation: IMD मांड्या स्टेशन"] },
+      crop: { keywords: ['fasal','crop','dhan','paddy','ragi','ganna','tamatar','tomato'], response: "वर्तमान जलवायु परिस्थितियों में: टमाटर की फसल को उच्च आर्द्रता से मध्यम जोखिम है। धान अच्छी स्थिति में है। रागी की कटाई अगले सप्ताह खुलती है।", recs: ["शुक्रवार की बारिश से पहले टमाटर की कटाई करें।", "फसल कैलेंडर देखें।", "Citation: UAS बैंगलोर"] },
+      disease: { keywords: ['bimari','rog','keeda','keet','patta','leaf','dhabb','spot'], response: "⚠️ चेतावनी: श्रीरंगपट्टना में फॉल आर्मीवर्म का प्रकोप। उच्च आर्द्रता (82%) से टमाटर में अर्ली ब्लाइट का खतरा बढ़ा है।", recs: ["पत्ती स्कैनर का उपयोग करें।", "नीम बीज अर्क लगाएं।", "Citation: UAS धारवाड़"] },
+      water: { keywords: ['pani','sinchai','irrigate','sukha','drought','nadi','talab'], response: "मिट्टी की नमी: 76%। हुलिकेरे झील 32% पर है। कल 73% बारिश की संभावना के कारण आज सिंचाई की सिफारिश नहीं है।", recs: ["शुक्रवार तक सिंचाई टालें।", "ड्रिप सिंचाई अपनाएं।", "Citation: IMD + कर्नाटक जल संसाधन"] },
+      fallback: { response: "मैंने आपके प्रश्न का मांड्या के स्थानीय जलवायु डेटा से विश्लेषण किया है। वर्तमान स्थिति स्थिर है। कृपया विशिष्ट विषय पूछें — मौसम, फसल, बीमारी, सिंचाई, या सरकारी योजनाएं।", recs: ["फसल कैलेंडर में दैनिक अलर्ट देखें।", "Citation: FarmCast AI"] }
+    },
+    kn: {
+      greetings: { keywords: ['hi','hello','hey','namaskara','shubhodaya'], response: "ನಮಸ್ಕಾರ ರಮೇಶ್! 🌾 ಇಂದು ಮಂಡ್ಯದಲ್ಲಿ: 28°C, ತೇವಾಂಶ 82%, ಮಳೆ ಸಾಧ್ಯತೆ 73%. ನಿಮ್ಮ ಕೃಷಿಗೆ ನಾನು ಹೇಗೆ ಸಹಾಯ ಮಾಡಬಹುದು?", recs: ["ಹವಾಮಾನ, ಬೆಳೆ, ರೋಗ ಅಥವಾ ನೀರಾವರಿ ಬಗ್ಗೆ ಕೇಳಿ.", "Citation: FarmCast AI"] },
+      weather: { keywords: ['weather','rain','male','maale','havaman','temp','bisilu','chali','gaali'], response: "ಮಂಡ್ಯ ಹವಾಮಾನ: ತಾಪಮಾನ 28°C, ತೇವಾಂಶ 82%, ಗಾಳಿ 12 km/h. ಮುಂದಿನ 24 ಗಂಟೆಗಳಲ್ಲಿ ಮಳೆ ಸಾಧ್ಯತೆ 73%, ನಿರೀಕ್ಷಿತ ಮಳೆ 35mm.", recs: ["ಶುಕ್ರವಾರದವರೆಗೆ ಸಿಂಪಡಣೆ ಮುಂದೂಡಿ.", "ಹೊಲದ ಕಾಲುವೆಗಳನ್ನು ಸ್ವಚ್ಛಗೊಳಿಸಿ.", "Citation: IMD ಮಂಡ್ಯ"] },
+      crop: { keywords: ['bele','crop','bhatta','paddy','ragi','kabbu','tomato'], response: "ಪ್ರಸ್ತುತ ಹವಾಮಾನದಲ್ಲಿ: ಟೊಮ್ಯಾಟೋ ಬೆಳೆಗೆ ಮಧ್ಯಮ ಅಪಾಯ. ಭತ್ತ ಉತ್ತಮ ಸ್ಥಿತಿಯಲ್ಲಿದೆ. ಮುಂದಿನ ವಾರ ರಾಗಿ ಕೊಯ್ಲು ಆರಂಭ.", recs: ["ಶುಕ್ರವಾರದ ಮಳೆಗೆ ಮುಂಚೆ ಟೊಮ್ಯಾಟೋ ಕೊಯ್ಲು ಮಾಡಿ.", "Citation: UAS ಬೆಂಗಳೂರು"] },
+      disease: { keywords: ['roga','keeta','ele','leaf','kale','haavu','hulu'], response: "⚠️ ಎಚ್ಚರಿಕೆ: ಶ್ರೀರಂಗಪಟ್ಟಣದಲ್ಲಿ ಫಾಲ್ ಆರ್ಮಿವರ್ಮ್ ಕಾಣಿಸಿಕೊಂಡಿದೆ. ಹೆಚ್ಚಿನ ತೇವಾಂಶ (82%) ಟೊಮ್ಯಾಟೋದಲ್ಲಿ ಅರ್ಲಿ ಬ್ಲೈಟ್ ಅಪಾಯವನ್ನು ಹೆಚ್ಚಿಸಿದೆ.", recs: ["ಎಲೆ ಸ್ಕ್ಯಾನರ್ ಬಳಸಿ.", "ಬೇವಿನ ಬೀಜ ಸಾರ ಬಳಸಿ.", "Citation: UAS ಧಾರವಾಡ"] },
+      water: { keywords: ['niru','neeru','irrigation','bari','odale','kere','dam'], response: "ಮಣ್ಣಿನ ತೇವಾಂಶ: 76%. ಹುಳಿಕೆರೆ ಕೆರೆ 32% ಸಾಮರ್ಥ್ಯದಲ್ಲಿದೆ. ನಾಳೆ 73% ಮಳೆ ಸಾಧ್ಯತೆಯಿಂದ ಇಂದು ನೀರಾವರಿ ಶಿಫಾರಸು ಇಲ್ಲ.", recs: ["ಶುಕ್ರವಾರದವರೆಗೆ ನೀರಾವರಿ ಮುಂದೂಡಿ.", "ಹನಿ ನೀರಾವರಿ ಅಳವಡಿಸಿ.", "Citation: IMD + ಕರ್ನಾಟಕ ಜಲ ಸಂಪನ್ಮೂಲ"] },
+      fallback: { response: "ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ಮಂಡ್ಯದ ಸ್ಥಳೀಯ ಹವಾಮಾನ ದತ್ತಾಂಶದೊಂದಿಗೆ ವಿಶ್ಲೇಷಿಸಿದ್ದೇನೆ. ಪ್ರಸ್ತುತ ಸ್ಥಿತಿ ಸ್ಥಿರವಾಗಿದೆ. ದಯವಿಟ್ಟು ನಿರ್ದಿಷ್ಟ ವಿಷಯ ಕೇಳಿ.", recs: ["ಬೆಳೆ ಕ್ಯಾಲೆಂಡರ್‌ನಲ್ಲಿ ದೈನಂದಿನ ಎಚ್ಚರಿಕೆಗಳನ್ನು ಪರಿಶೀಲಿಸಿ.", "Citation: FarmCast AI"] }
+    }
+  };
+
+  // Keep suggested prompts working
+  const suggestedPrompts = {
+    prompt_1: { en: "Will tomorrow's rainfall damage flowering tomato?", hi: "क्या कल की बारिश टमाटर के फूलों को नुकसान पहुंचाएगी?", kn: "ನಾಳೆಯ ಮಳೆ ಟೊಮ್ಯಾಟೋ ಹೂವುಗಳಿಗೆ ಹಾನಿ ಮಾಡುತ್ತದೆಯೇ?" },
+    prompt_2: { en: "Should I irrigate today?", hi: "क्या मुझे आज सिंचाई करनी चाहिए?", kn: "ಇಂದು ನೀರಾವರಿ ಮಾಡಬೇಕೇ?" },
+    prompt_3: { en: "Pesticide spray recommendations", hi: "कीटनाशक छिड़काव सिफारिशें", kn: "ಕೀಟನಾಶಕ ಸಿಂಪಡಣೆ ಶಿಫಾರಸುಗಳು" }
+  };
+
+  function processUserMessage(text) {
+    const lang = currentLang;
+    const responses = chatResponses[lang] || chatResponses.en;
+    const lowerText = text.toLowerCase();
+
+    // Check each category for keyword match
+    const categories = ['greetings','weather','crop','disease','water','emergency','village','scheme','calendar'];
+    for (const cat of categories) {
+      const catData = responses[cat];
+      if (!catData) continue;
+      const matched = catData.keywords && catData.keywords.some(kw => lowerText.includes(kw));
+      if (matched) {
+        return { text: catData.response, recs: catData.recs || [] };
+      }
+    }
+
+    // Also check English keywords when in non-English mode (farmers may type in English)
+    if (lang !== 'en') {
+      const enResponses = chatResponses.en;
+      for (const cat of categories) {
+        const catData = enResponses[cat];
+        if (!catData) continue;
+        const matched = catData.keywords && catData.keywords.some(kw => lowerText.includes(kw));
+        if (matched) {
+          // Return response in selected language if available
+          const localCat = responses[cat];
+          if (localCat) return { text: localCat.response, recs: localCat.recs || [] };
+          return { text: catData.response, recs: catData.recs || [] };
+        }
+      }
+    }
+
+    // Fallback response
+    const fb = responses.fallback || chatResponses.en.fallback || {};
+    const fbText = fb.response || "I've analyzed your query against local Mandya atmospheric sensors. Current conditions remain stable. Please ask about weather, crops, diseases, irrigation, or government schemes for specific guidance.";
+    return { text: fbText, recs: fb.recs || ["Monitor the crop calendar daily for alerts.", "Citation: FarmCast AI."] };
+  }
+
+  // English fallback for chatResponses.en
+  chatResponses.en.fallback = {
+    response: "I've analyzed your query against local Mandya climate sensors. Current conditions remain stable for the next 24 hours. Ask me specifically about weather, crops, diseases, irrigation, government schemes, or your village for detailed guidance.",
+    recs: ["Monitor the crop calendar daily for alerts.", "Try asking: 'weather', 'crop advice', 'pest alert', or 'irrigation'.", "Citation: FarmCast AI Local Intelligence."]
+  };
+
+  function handleChatKey(event) {
+    if (event.key === 'Enter') {
+      sendUserMessage();
+    }
+  }
+
+  function sendUserMessage() {
+    const input = document.getElementById('chat-input-field');
+    const text = input.value.trim();
+    if (!text) return;
+
+    appendChatMessage(text, 'sent');
+    input.value = '';
+
+    // Process with keyword engine
+    const aiResult = processUserMessage(text);
+    appendTypingBubble();
+    setTimeout(() => {
+      removeTypingBubble();
+      appendAIChatResponse(aiResult.text, aiResult.recs);
+    }, 800 + Math.random() * 800);
+  }
+
+  function sendSuggestedChat(promptKey) {
+    const lang = currentLang;
+    const promptText = (suggestedPrompts[promptKey] && suggestedPrompts[promptKey][lang]) || suggestedPrompts[promptKey].en;
+    appendChatMessage(promptText, 'sent');
+    
+    // Process through keyword engine
+    const aiResult = processUserMessage(promptText);
+    appendTypingBubble();
+    
+    setTimeout(() => {
+      removeTypingBubble();
+      appendAIChatResponse(aiResult.text, aiResult.recs);
+    }, 1200 + Math.random() * 600);
+  }
+
+  function appendChatMessage(text, type) {
+    const box = document.getElementById('chat-messages-box');
+    const msg = document.createElement('div');
+    msg.className = `msg msg-${type}`;
+    msg.innerText = text;
+    box.appendChild(msg);
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function appendTypingBubble() {
+    const box = document.getElementById('chat-messages-box');
+    const msg = document.createElement('div');
+    msg.className = 'msg msg-received';
+    msg.id = 'typing-bubble';
+    msg.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+    box.appendChild(msg);
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function removeTypingBubble() {
+    const bubble = document.getElementById('typing-bubble');
+    if (bubble) bubble.remove();
+  }
+
+  function appendAIChatResponse(text, recs) {
+    const box = document.getElementById('chat-messages-box');
+    const msg = document.createElement('div');
+    msg.className = 'msg msg-received';
+    
+    // Convert newlines to <br> for formatted responses
+    const formattedText = text.replace(/\n/g, '<br>');
+    let html = `<div>${formattedText}</div>`;
+    if (recs && recs.length > 0) {
+      html += `<div style="font-weight:700; margin-top:8px; font-size:12px;">Recommendations:</div>`;
+      html += `<ul style="padding-left:14px; font-size:12px; margin-top:4px; line-height:1.4;">`;
+      recs.forEach(r => {
+        if(r.includes('Citation:')) {
+          html += `</ul><div class="chat-citation"><span class="material-icons-round" style="font-size:12px;">menu_book</span>${r}</div>`;
+        } else {
+          html += `<li>${r}</li>`;
+        }
+      });
+    }
+
+    msg.innerHTML = html;
+    box.appendChild(msg);
+    box.scrollTop = box.scrollHeight;
+  }
+
+  // 13. Voice Recording Simulation
+  let isRecording = false;
+  function toggleVoiceRecording() {
+    const btn = document.getElementById('voice-record-btn');
+    const wave = document.getElementById('voice-waveform');
+    
+    if(!isRecording) {
+      isRecording = true;
+      btn.classList.add('voice-recording-active');
+      wave.style.display = 'flex';
+      
+      setTimeout(() => {
+        if(isRecording) toggleVoiceRecording();
+        // Simulate voice-to-text with a contextual query
+        const voiceQueries = ['weather forecast', 'should I irrigate today', 'pest alert', 'crop advice', 'water level'];
+        const randomQuery = voiceQueries[Math.floor(Math.random() * voiceQueries.length)];
+        const input = document.getElementById('chat-input-field');
+        input.value = randomQuery;
+        sendUserMessage();
+      }, 3500);
+    } else {
+      isRecording = false;
+      btn.classList.remove('voice-recording-active');
+      wave.style.display = 'none';
+    }
+  }
+
+  // 14. Emergency SOS Trigger
+  let sosActive = false;
+  let flashInterval = null;
+  function triggerSOSAlert() {
+    const overlay = document.getElementById('sos-countdown-msg');
+    const bezel = document.getElementById('phone-bezel-outer');
+    
+    if(!sosActive) {
+      sosActive = true;
+      overlay.style.display = 'block';
+      
+      flashInterval = setInterval(() => {
+        bezel.classList.toggle('sos-flashing');
+      }, 400);
+
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let beepCount = 0;
+        const interval = setInterval(() => {
+          if (beepCount > 5 || !sosActive) {
+            clearInterval(interval);
+            return;
+          }
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+          gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.15);
+          beepCount++;
+        }, 1000);
+      } catch(e) {
+        console.log("Audio API blocked or not supported.");
+      }
+    } else {
+      sosActive = false;
+      overlay.style.display = 'none';
+      clearInterval(flashInterval);
+      bezel.classList.remove('sos-flashing');
+    }
+  }
+
+  // 15. Calendar day selection helper and dynamic database
+  const calendarTasks = {
+    en: {
+      3: [
+        { time: "07:00 AM", title: "Soil Moisture Check", desc: "Optimal moisture levels, no irrigation needed.", pill: "Completed", pillClass: "pill-green" },
+        { time: "09:30 AM", title: "Pest Scouting", desc: "Check tomato leaves for Fall Armyworm eggs.", pill: "Completed", pillClass: "pill-green" },
+        { time: "03:00 PM", title: "Fertilizer Application", desc: "Apply organic compost to sugarcane blocks.", pill: "Completed", pillClass: "pill-green" }
+      ],
+      4: [
+        { time: "08:00 AM", title: "Watering: Delay Irrigation", desc: "High rainfall expected. Automated gate closed.", pill: "Postponed", pillClass: "pill-blue" },
+        { time: "11:30 AM", title: "Foliar Nutrient Spraying", desc: "Apply Calcium Boron to tomato flowers to prevent drop.", pill: "Scheduled", pillClass: "pill-yellow" },
+        { time: "04:00 PM", title: "Disease Risk Inspection", desc: "Inspect lower tomato leaves for brown blight spots.", pill: "Critical Check", pillClass: "pill-red" }
+      ],
+      5: [
+        { time: "06:00 AM", title: "Clear Drainage Channels", desc: "Pre-rain check. Clear primary and secondary farm drains.", pill: "Scheduled", pillClass: "pill-yellow" },
+        { time: "10:00 AM", title: "Mulching", desc: "Straw mulch application to cool tomato roots during afternoon heat.", pill: "Scheduled", pillClass: "pill-yellow" },
+        { time: "02:00 PM", title: "Market Price Check", desc: "Compare APMC Mandya tomato rates with local buyers.", pill: "Info", pillClass: "pill-blue" }
+      ],
+      6: [
+        { time: "06:00 AM", title: "Canal Water Intake", desc: "Canal water allocated to your plot. Open primary inlet.", pill: "Scheduled", pillClass: "pill-yellow" },
+        { time: "09:00 AM", title: "Crop Health Logging", desc: "Take photo of tomato crop for FarmCast AI progress report.", pill: "Scheduled", pillClass: "pill-yellow" },
+        { time: "05:00 PM", title: "Clean Equipment", desc: "Maintenance of micro-sprinklers and filters.", pill: "Maintenance", pillClass: "pill-blue" }
+      ],
+      7: [
+        { time: "08:00 AM", title: "Safe Pesticide Spray Window", desc: "Dry weather window open. Spray neem kernel oil.", pill: "Scheduled", pillClass: "pill-yellow" },
+        { time: "11:00 AM", title: "Harvest Sizing", desc: "Check tomato fruit color and maturity indexing.", pill: "Scheduled", pillClass: "pill-yellow" },
+        { time: "03:30 PM", title: "Cooperative Meeting", desc: "Mandya Farmer Cooperative Society monthly briefing.", pill: "Meeting", pillClass: "pill-blue" }
+      ],
+      8: [
+        { time: "06:30 AM", title: "Tomato Harvesting", desc: "Harvest ripe fruits before high humidity sets in.", pill: "Scheduled", pillClass: "pill-yellow" },
+        { time: "10:00 AM", title: "Sort & Grade Produce", desc: "Separate Grade A and Grade B tomatoes for logistics.", pill: "Scheduled", pillClass: "pill-yellow" },
+        { time: "01:00 PM", title: "Dispatch to Mandya APMC", desc: "Logistics transport truck pickup scheduled.", pill: "Dispatch", pillClass: "pill-blue" }
+      ]
+    },
+    hi: {
+      3: [
+        { time: "07:00 AM", title: "मिट्टी की नमी की जांच", desc: "इष्टतम नमी का स्तर, सिंचाई की आवश्यकता नहीं है।", pill: "पूर्ण", pillClass: "pill-green" },
+        { time: "09:30 AM", title: "कीट निगरानी", desc: "फॉल आर्मीवॉर्म के अंडों के लिए टमाटर के पत्तों की जाँच करें।", pill: "पूर्ण", pillClass: "pill-green" },
+        { time: "03:00 PM", title: "उर्वरक अनुप्रयोग", desc: "गन्ने के ब्लॉकों में जैविक खाद डालें।", pill: "पूर्ण", pillClass: "pill-green" }
+      ],
+      4: [
+        { time: "08:00 AM", title: "सिंचाई: पानी देने में देरी करें", desc: "भारी बारिश की उम्मीद। स्वचालित गेट बंद किया गया।", pill: "स्थगित", pillClass: "pill-blue" },
+        { time: "11:30 AM", title: "पर्ण पोषक तत्व छिड़काव", desc: "टमाटर के फूलों को झड़ने से रोकने के लिए कैल्शियम बोरॉन लगाएं।", pill: "अनुसूचित", pillClass: "pill-yellow" },
+        { time: "04:00 PM", title: "रोग जोखिम निरीक्षण", desc: "टमाटर के निचले पत्तों पर भूरे रंग के धब्बों की जाँच करें।", pill: "महत्वपूर्ण जाँच", pillClass: "pill-red" }
+      ],
+      5: [
+        { time: "06:00 AM", title: "नालियों की सफाई करें", desc: "बारिश से पहले की जांच। खेत की नालियां साफ करें।", pill: "अनुसूचित", pillClass: "pill-yellow" },
+        { time: "10:00 AM", title: "मल्चिंग", desc: "दोपहर की गर्मी में जड़ों को ठंडा रखने के लिए सूखी घास बिछाएं।", pill: "अनुसूचित", pillClass: "pill-yellow" },
+        { time: "02:00 PM", title: "बाजार मूल्य की जांच", desc: "स्थानीय खरीदारों के साथ एपीएमसी मांड्या टमाटर दरों की तुलना करें।", pill: "जानकारी", pillClass: "pill-blue" }
+      ],
+      6: [
+        { time: "06:00 AM", title: "नहर के पानी का सेवन", desc: "आपके खेत को नहर का पानी आवंटित। प्राथमिक द्वार खोलें।", pill: "अनुसूचित", pillClass: "pill-yellow" },
+        { time: "09:00 AM", title: "फसल स्वास्थ्य लॉगिंग", desc: "प्रगति रिपोर्ट के लिए टमाटर की फसल की फोटो लें।", pill: "अनुसूचित", pillClass: "pill-yellow" },
+        { time: "05:00 PM", title: "उपकरणों की सफाई", desc: "माइक्रो-स्प्रिंकलर और फिल्टर का रखरखाव।", pill: "रखरखाव", pillClass: "pill-blue" }
+      ],
+      7: [
+        { time: "08:00 AM", title: "सुरक्षित कीटनाशक छिड़काव", desc: "शुष्क मौसम की खिड़की खुली। नीम के तेल का छिड़काव करें।", pill: "अनुसूचित", pillClass: "pill-yellow" },
+        { time: "11:00 AM", title: "कटाई का आकार", desc: "टमाटर के रंग और परिपक्वता सूचकांक की जांच करें।", pill: "अनुसूचित", pillClass: "pill-yellow" },
+        { time: "03:30 PM", title: "सहकारी बैठक", desc: "मांड्या किसान सहकारी समिति की मासिक बैठक।", pill: "बैठक", pillClass: "pill-blue" }
+      ],
+      8: [
+        { time: "06:30 AM", title: "टमाटर की कटाई", desc: "उच्च आर्द्रता से पहले पके फलों की कटाई करें।", pill: "अनुसूचित", pillClass: "pill-yellow" },
+        { time: "10:00 AM", title: "छँटाई और ग्रेडिंग", desc: "परिवहन के लिए ग्रेड ए और ग्रेड बी टमाटर अलग करें।", pill: "अनुसूचित", pillClass: "pill-yellow" },
+        { time: "01:00 PM", title: "मांड्या एपीएमसी को प्रेषण", desc: "परिवहन ट्रक पिकअप निर्धारित किया गया है।", pill: "प्रेषण", pillClass: "pill-blue" }
+      ]
+    },
+    kn: {
+      3: [
+        { time: "07:00 AM", title: "ಮಣ್ಣಿನ ತೇವಾಂಶ ತಪಾಸಣೆ", desc: "ಸೂಕ್ತ ತೇವಾಂಶ ಮಟ್ಟ, ನೀರಾವರಿ ಅಗತ್ಯವಿಲ್ಲ.", pill: "ಪೂರ್ಣಗೊಂಡಿದೆ", pillClass: "pill-green" },
+        { time: "09:30 AM", title: "ಕೀಟ ತಪಾಸಣೆ", desc: "ಟೊಮ್ಯಾಟೋ ಎಲೆಗಳಲ್ಲಿ ಸೈನಿಕ ಹುಳು ಮೊಟ್ಟೆಗಳನ್ನು ಪರಿಶೀಲಿಸಿ.", pill: "ಪೂರ್ಣಗೊಂಡಿದೆ", pillClass: "pill-green" },
+        { time: "03:00 PM", title: "ಗೊಬ್ಬರ ಅಳವಡಿಕೆ", desc: "ಕಬ್ಬಿನ ಗದ್ದೆಗೆ ಸಾವಯವ ಗೊಬ್ಬರ ಹಾಕಿ.", pill: "ಪೂರ್ಣಗೊಂಡಿದೆ", pillClass: "pill-green" }
+      ],
+      4: [
+        { time: "08:00 AM", title: "ನೀರಾವರಿ: ತಡವಾಗಿ ನೀರುಣಿಸಿ", desc: "ಹೆಚ್ಚಿನ ಮಳೆ ನಿರೀಕ್ಷೆ. ಸ್ವಯಂಚಾಲಿತ ಗೇಟ್ ಮುಚ್ಚಲಾಗಿದೆ.", pill: "ಮುಂದೂಡಲಾಗಿದೆ", pillClass: "pill-blue" },
+        { time: "11:30 AM", title: "ಎಲೆ ಪೋಷಕಾಂಶಗಳ ಸಿಂಪಡಣೆ", desc: "ಹೂವು ಉದುರುವುದನ್ನು ತಡೆಯಲು ಕ್ಯಾಲ್ಸಿಯಂ ಬೋರಾನ್ ಹಾಕಿ.", pill: "ನಿಗದಿಪಡಿಸಲಾಗಿದೆ", pillClass: "pill-yellow" },
+        { time: "04:00 PM", title: "ರೋಗ ಅಪಾಯದ ತಪಾಸಣೆ", desc: "ಟೊಮ್ಯಾಟೋ ಎಲೆಗಳ ಕೆಳಭಾಗದಲ್ಲಿ ಕಂದು ಚುಕ್ಕೆಗಳನ್ನು ಪರಿಶೀಲಿಸಿ.", pill: "ತುರ್ತು ಪರಿಶೀಲನೆ", pillClass: "pill-red" }
+      ],
+      5: [
+        { time: "06:00 AM", title: "ಕಾಲುವೆಗಳ ಸ್ವಚ್ಛತೆ", desc: "ಮಳೆಗೆ ಮುನ್ನ ಹೊಲದ ಮುಖ್ಯ ಮತ್ತು ಉಪ ಕಾಲುವೆಗಳನ್ನು ಸ್ವಚ್ಛಗೊಳಿಸಿ.", pill: "ನಿಗದಿಪಡಿಸಲಾಗಿದೆ", pillClass: "pill-yellow" },
+        { time: "10:00 AM", title: "ಮಲ್ಚಿಂಗ್", desc: "ಮಧ್ಯಾಹ್ನದ ಬಿಸಿಲಿನಲ್ಲಿ ಬೇರುಗಳನ್ನು ತಂಪಾಗಿಡಲು ಒಣ ಹುಲ್ಲು ಹೊದಿಸಿ.", pill: "ನಿಗದಿಪಡಿಸಲಾಗಿದೆ", pillClass: "pill-yellow" },
+        { time: "02:00 PM", title: "ಮಾರುಕಟ್ಟೆ ಬೆಲೆ ಪರಿಶೀಲನೆ", desc: "ಮಂಡ್ಯ ಎಪಿಎಂಸಿ ದರಗಳನ್ನು ಸ್ಥಳೀಯ ಖರೀದಿದಾರರೊಂದಿಗೆ ಹೋಲಿಕೆ ಮಾಡಿ.", pill: "ಮಾಹಿತಿ", pillClass: "pill-blue" }
+      ],
+      6: [
+        { time: "06:00 AM", title: "ಕಾಲುವೆ ನೀರು ಪಡೆಯುವುದು", desc: "ನಿಮ್ಮ ಗದ್ದೆಗೆ ಕಾಲುವೆ ನೀರು ಹಂಚಿಕೆ. ಮುಖ್ಯ ಗೇಟ್ ತೆರೆಯಿರಿ.", pill: "ನಿಗದಿಪಡಿಸಲಾಗಿದೆ", pillClass: "pill-yellow" },
+        { time: "09:00 AM", title: "ಬೆಳೆ ಆರೋಗ್ಯ ದಾಖಲಾತಿ", desc: "ಟೊಮ್ಯಾಟೋ ಬೆಳೆಯ ಫೋಟೋ ತೆಗೆದು ಆಪ್‌ನಲ್ಲಿ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ.", pill: "ನಿಗದಿಪಡಿಸಲಾಗಿದೆ", pillClass: "pill-yellow" },
+        { time: "05:00 PM", title: "ಉಪಕರಣಗಳ ಸ್ವಚ್ಛತೆ", desc: "ಹನಿ ನೀರಾವರಿ ಸ್ಪ್ರಿಂಕ್ಲರ್ ಹಾಗೂ ಫಿಲ್ಟರ್‌ಗಳ ನಿರ್ವಹಣೆ.", pill: "ನಿರ್ವಹಣೆ", pillClass: "pill-blue" }
+      ],
+      7: [
+        { time: "08:00 AM", title: "ಸುರಕ್ಷಿತ ಕೀಟನಾಶಕ ಸಿಂಪಡಣೆ", desc: "ಒಣ ಹವಾಮಾನದ ಸಮಯದಲ್ಲಿ ಬೇವಿನ ಎಣ್ಣೆ ಸಿಂಪಡಿಸಿ.", pill: "ನಿಗದಿಪಡಿಸಲಾಗಿದೆ", pillClass: "pill-yellow" },
+        { time: "11:00 AM", title: "ಕೊಯ್ಲು ಗಾತ್ರ ಪರಿಶೀಲನೆ", desc: "ಟೊಮ್ಯಾಟೋ ಹಣ್ಣುಗಳ ಬಣ್ಣ ಮತ್ತು ಗಾತ್ರ ಪರಿಶೀಲಿಸಿ.", pill: "ನಿಗದಿಪಡಿಸಲಾಗಿದೆ", pillClass: "pill-yellow" },
+        { time: "03:30 PM", title: "ಸಹಕಾರ ಸಂಘದ ಸಭೆ", desc: "ಮಂಡ್ಯ ರೈತ ಸಹಕಾರ ಸಂಘದ ಮಾಸಿಕ ಸಭೆ.", pill: "ಸಭೆ", pillClass: "pill-blue" }
+      ],
+      8: [
+        { time: "06:30 AM", title: "ಟೊಮ್ಯಾಟೋ ಕೊಯ್ಲು", desc: "ಹೆಚ್ಚಿನ ತೇವಾಂಶ ಇರುವುದಕ್ಕಿಂತ ಮೊದಲು ಹಣ್ಣುಗಳನ್ನು ಕೊಯ್ಲು ಮಾಡಿ.", pill: "ನಿಗದಿಪಡಿಸಲಾಗಿದೆ", pillClass: "pill-yellow" },
+        { time: "10:00 AM", title: "ವಿಂಗಡಣೆ ಮತ್ತು ವರ್ಗೀಕರಣ", desc: "ಸಾರಿಗೆಗಾಗಿ ಎ ಗ್ರೇಡ್ ಮತ್ತು ಬಿ ಗ್ರೇಡ್ ಟೊಮ್ಯಾಟೋ ಬೇರ್ಪಡಿಸಿ.", pill: "ನಿಗದಿಪಡಿಸಲಾಗಿದೆ", pillClass: "pill-yellow" },
+        { time: "01:00 PM", title: "ಮಂಡ್ಯ ಎಪಿಎಂಸಿಗೆ ರವಾನೆ", desc: "ಸಾರಿಗೆ ವಾಹನದ ಪಿಕ್-ಅಪ್ ನಿಗದಿಪಡಿಸಲಾಗಿದೆ.", pill: "ರವಾನೆ", pillClass: "pill-blue" }
+      ]
+    }
+  };
+
+  function selectCalendarDay(el) {
+    document.querySelectorAll('.cal-day').forEach(d => d.classList.remove('active'));
+    el.classList.add('active');
+    const dayNumSpan = el.querySelector('.cal-day-num');
+    if (dayNumSpan) {
+      renderCalendarTasks(parseInt(dayNumSpan.innerText));
+    }
+  }
+
+  function renderCalendarTasks(dayNum) {
+    const container = document.getElementById('calendar-timeline');
+    if (!container) return;
+
+    const lang = currentLang || 'en';
+    const dayTasks = (calendarTasks[lang] && calendarTasks[lang][dayNum]) || (calendarTasks['en'] && calendarTasks['en'][dayNum]) || [];
+
+    let html = '';
+    dayTasks.forEach(task => {
+      const isCompleted = task.pill.toLowerCase() === 'completed' || task.pill === 'पूर्ण' || task.pill === 'ಪೂರ್ಣಗೊಂಡಿದೆ';
+      const nodeClass = isCompleted ? 'timeline-node completed' : 'timeline-node';
+
+      html += `
+        <div class="timeline-item">
+          <div class="${nodeClass}"></div>
+          <div class="card timeline-card">
+            <div class="timeline-time">${task.time}</div>
+            <div class="timeline-title">${task.title}</div>
+            <p style="font-size:12px; margin-top:4px; color:var(--color-gray-text);">${task.desc}</p>
+            <span class="pill ${task.pillClass}" style="margin-top:6px; font-size:10px;">${task.pill}</span>
+          </div>
+        </div>
+      `;
+    });
+
+    container.innerHTML = html;
+  }
+
+  // 16. Dial simulation
+  function simulatePhoneDial(number) {
+    alert(`Calling Emergency services: ${number}...`);
+  }
+
+  // 17. Dark Mode switcher
+  function toggleDarkMode(isChecked) {
+    if(isChecked) {
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
+  }
+
+  // Location setting update
+  function updateUserLocation() {
+    const locInput = document.getElementById('profile-location-input');
+    const display = document.getElementById('user-location-display');
+    if (locInput && display) {
+      const newLoc = locInput.value.trim();
+      if (newLoc) {
+        display.innerText = newLoc;
+        alert(`Location successfully updated to: ${newLoc}`);
+      }
+    }
+  }
+
+  // 18. Set Time on Status Bar
+  function updateTime() {
+    const now = new Date();
+    let hours = now.getHours();
+    let minutes = now.getMinutes();
+    hours = hours < 10 ? '0' + hours : hours;
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    const timeStr = hours + ':' + minutes;
+    const el = document.getElementById('status-time');
+    if (el) el.innerText = timeStr;
+  }
+  setInterval(updateTime, 10000);
+  updateTime();
+
+  // Render initial tasks for Tue 4
+  renderCalendarTasks(4);
+
+  // Initialize interactive map and community feed lists
+  renderMapPins();
+  renderCommunityFeed();
+
+  // Add click handler on map SVG to capture tap coordinates
+  const svgMap = document.getElementById('community-map-canvas');
+  if (svgMap) {
+    svgMap.addEventListener('click', function(e) {
+      if (e.target.closest('.map-pin')) return; // ignore click if clicking directly on a pin
+
+      const rect = svgMap.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 350;
+      const y = ((e.clientY - rect.top) / rect.height) * 380;
+
+      lastMapTapCoords = { x: Math.round(x), y: Math.round(y) };
+
+      // Autocomplete location based on coordinate quadrants
+      const locInput = document.getElementById('new-hazard-location');
+      if (locInput) {
+        if (x < 175 && y < 190) locInput.value = "Northwest Sector Plots";
+        else if (x >= 175 && y < 190) locInput.value = "Northeast High Ground";
+        else if (x < 175 && y >= 190) locInput.value = "Southwest Lowlands";
+        else locInput.value = "Southeast Border Block";
+      }
+
+      openReportIncidentSheet();
+    });
+  }
+
+</script>
+</body>
+</html>
