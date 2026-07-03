@@ -1242,6 +1242,10 @@
       border-color: var(--color-green-primary);
     }
 
+    .cal-day.today {
+      border: 2px solid var(--color-green-primary);
+    }
+
     .cal-day-name {
       font-size: 10px;
       font-weight: 500;
@@ -1252,6 +1256,64 @@
     .cal-day-num {
       font-size: 16px;
       font-weight: 700;
+    }
+
+    .btn-toggle {
+      color: var(--color-gray-text);
+      background: transparent;
+      border: none;
+      font-family: inherit;
+    }
+
+    .btn-toggle.active {
+      background: var(--color-card);
+      color: var(--color-green-primary);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    .month-grid-header {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      font-weight: 600;
+      font-size: 11px;
+      color: var(--color-gray-text);
+      margin-bottom: 8px;
+    }
+
+    .month-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .month-day {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .month-day.other-month {
+      opacity: 0.35;
+    }
+
+    .month-day.active {
+      background: var(--color-green-primary);
+      color: white;
+      border-color: var(--color-green-primary);
+    }
+
+    .month-day.today {
+      border: 2px solid var(--color-green-primary);
     }
 
     /* Timeline Cards */
@@ -2039,6 +2101,31 @@
           </div>
         </div>
         
+        <!-- My Crop Status Card -->
+        <div class="card" id="home-crop-status-card" style="padding:14px; margin-bottom:14px; display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="material-icons-round" style="color:var(--color-green-primary); font-size:24px;" id="home-crop-icon">agriculture</span>
+              <div>
+                <h4 style="margin:0; font-size:14px; font-weight:700;" id="home-crop-name" data-i18n="crop_tomato">Tomato</h4>
+                <p style="margin:0; font-size:11px; color:var(--color-gray-text);" data-i18n="active_crop_subtitle">My Active Crop</p>
+              </div>
+            </div>
+            <span class="pill pill-green" id="home-crop-stage-pill" style="font-size:10px; font-weight:700;" data-i18n="stage_flowering">Flowering Stage</span>
+          </div>
+          
+          <!-- Stage Progress bar -->
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px; color:var(--color-gray-text);">
+              <span data-i18n="crop_growth_progress">Growth Stage Progress</span>
+              <span id="home-crop-stage-percent">60%</span>
+            </div>
+            <div style="width:100%; height:6px; background:var(--color-border); border-radius:3px; overflow:hidden;">
+              <div id="home-crop-stage-bar" style="width:60%; height:100%; background:var(--color-green-primary); border-radius:3px; transition: width 0.4s ease;"></div>
+            </div>
+          </div>
+        </div>
+
         <!-- Today's Farm Outlook Card -->
         <div class="card outlook-card">
           <h3 data-i18n="outlook_title">Today's Farm Outlook</h3>
@@ -2212,25 +2299,32 @@
       <div class="screen" id="screen-calendar">
         <h2 data-i18n="calendar_title">Crop Calendar</h2>
         <p data-i18n="calendar_subtitle" style="margin-bottom:14px;">Smart task organizer for your farm</p>
+
+        <!-- View Toggle and Navigation Header -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; gap:8px;">
+          <div class="calendar-view-toggle" style="display:flex; background:var(--color-border); border-radius:10px; padding:3px;">
+            <button id="btn-view-week" class="btn-toggle active" onclick="switchCalendarView('week')" style="border:none; background:transparent; padding:6px 12px; border-radius:8px; font-weight:600; font-size:11px; cursor:pointer; transition: all 0.2s;">Week</button>
+            <button id="btn-view-month" class="btn-toggle" onclick="switchCalendarView('month')" style="border:none; background:transparent; padding:6px 12px; border-radius:8px; font-weight:600; font-size:11px; cursor:pointer; transition: all 0.2s;">Month</button>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <button onclick="navigateCalendar(-1)" style="border:none; background:var(--color-border); border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--color-gray-text);"><span class="material-icons-round" style="font-size:18px;">chevron_left</span></button>
+            <span id="calendar-header-title" style="font-weight:700; font-size:13px; min-width:90px; text-align:center;">July 2025</span>
+            <button onclick="navigateCalendar(1)" style="border:none; background:var(--color-border); border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--color-gray-text);"><span class="material-icons-round" style="font-size:18px;">chevron_right</span></button>
+          </div>
+        </div>
         
-        <div class="calendar-strip">
-          <div class="cal-day" onclick="selectCalendarDay(this)">
-            <span class="cal-day-name">Mon</span><span class="cal-day-num">3</span>
+        <!-- Week View Strip -->
+        <div class="calendar-strip" id="calendar-week-container">
+          <!-- Dynamically generated days -->
+        </div>
+
+        <!-- Month View Grid -->
+        <div id="calendar-month-container" style="display:none; margin-bottom:16px;">
+          <div class="month-grid-header" id="month-grid-header">
+            <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
           </div>
-          <div class="cal-day active" onclick="selectCalendarDay(this)">
-            <span class="cal-day-name">Tue</span><span class="cal-day-num">4</span>
-          </div>
-          <div class="cal-day" onclick="selectCalendarDay(this)">
-            <span class="cal-day-name">Wed</span><span class="cal-day-num">5</span>
-          </div>
-          <div class="cal-day" onclick="selectCalendarDay(this)">
-            <span class="cal-day-name">Thu</span><span class="cal-day-num">6</span>
-          </div>
-          <div class="cal-day" onclick="selectCalendarDay(this)">
-            <span class="cal-day-name">Fri</span><span class="cal-day-num">7</span>
-          </div>
-          <div class="cal-day" onclick="selectCalendarDay(this)">
-            <span class="cal-day-name">Sat</span><span class="cal-day-num">8</span>
+          <div class="month-grid" id="calendar-month-grid">
+            <!-- Dynamically generated month days -->
           </div>
         </div>
         
@@ -2783,6 +2877,38 @@
             <span class="material-icons-round action-chevron">chevron_right</span>
           </div>
         </div>
+
+        <!-- My Farm Details Card -->
+        <div class="card" style="padding:14px; margin-top:14px;">
+          <h3 style="font-size:15px; margin-bottom:12px; font-weight:700;" data-i18n="farm_details_title">My Farm Details</h3>
+          
+          <!-- Crop selection -->
+          <div style="margin-bottom:12px;">
+            <label style="font-weight:600; font-size:12px; display:block; margin-bottom:6px;" data-i18n="crop_type_lbl">Crop Type</label>
+            <select class="input-field" style="width:100%; padding:8px 12px; border-radius:10px; font-size:12px;" id="profile-crop-select">
+              <option value="tomato" data-i18n="crop_tomato">Tomato</option>
+              <option value="paddy" data-i18n="crop_paddy">Paddy (Rice)</option>
+              <option value="ragi" data-i18n="crop_ragi">Ragi (Finger Millet)</option>
+              <option value="sugarcane" data-i18n="crop_sugarcane">Sugarcane</option>
+              <option value="maize" data-i18n="crop_maize">Maize</option>
+            </select>
+          </div>
+
+          <!-- Crop stage selection -->
+          <div style="margin-bottom:12px;">
+            <label style="font-weight:600; font-size:12px; display:block; margin-bottom:6px;" data-i18n="crop_stage_lbl">Crop Stage</label>
+            <select class="input-field" style="width:100%; padding:8px 12px; border-radius:10px; font-size:12px;" id="profile-stage-select">
+              <option value="sowing" data-i18n="stage_sowing">Sowing / Nursery</option>
+              <option value="vegetative" data-i18n="stage_vegetative">Vegetative Growth</option>
+              <option value="flowering" data-i18n="stage_flowering">Flowering Stage</option>
+              <option value="fruiting" data-i18n="stage_fruiting">Fruiting / Grain Fill</option>
+              <option value="harvesting" data-i18n="stage_harvesting">Harvesting</option>
+            </select>
+          </div>
+
+          <!-- Save details button -->
+          <button class="btn btn-primary" onclick="saveFarmDetails()" style="width:100%; padding:10px; font-size:12px; border-radius:10px; font-weight:700;">Save Farm Details</button>
+        </div>
         
         <!-- Government Schemes list -->
         <div class="section-title" data-i18n="gov_schemes">Active Government Schemes</div>
@@ -3053,7 +3179,22 @@
       alert_notif_1_title: "Heavy Rainfall Alert (Mandya Area)",
       alert_notif_1_desc: "Expect precipitation exceeding 45mm within the next 24 hours. Clear primary drains.",
       alert_notif_2_title: "Pest Alert: Fall Armyworm",
-      alert_notif_2_desc: "Spotted in Srirangapatna village. Spray Neem Seed Kernel extract if spots show."
+      alert_notif_2_desc: "Spotted in Srirangapatna village. Spray Neem Seed Kernel extract if spots show.",
+      farm_details_title: "My Farm Details",
+      crop_type_lbl: "Crop Type",
+      crop_stage_lbl: "Crop Stage",
+      active_crop_subtitle: "My Active Crop",
+      crop_growth_progress: "Growth Stage Progress",
+      crop_tomato: "Tomato",
+      crop_paddy: "Paddy (Rice)",
+      crop_ragi: "Ragi (Finger Millet)",
+      crop_sugarcane: "Sugarcane",
+      crop_maize: "Maize",
+      stage_sowing: "Sowing / Nursery",
+      stage_vegetative: "Vegetative Growth",
+      stage_flowering: "Flowering Stage",
+      stage_fruiting: "Fruiting / Grain Fill",
+      stage_harvesting: "Harvesting"
     },
     hi: {
       splash_tagline: "पूर्वानुमान को खेत के फैसलों में बदलना",
@@ -3216,7 +3357,22 @@
       alert_notif_1_title: "भारी वर्षा की चेतावनी (मंड्या क्षेत्र)",
       alert_notif_1_desc: "अगले 24 घंटों में 45 मिमी से अधिक बारिश होने की संभावना। नालियों को साफ करें।",
       alert_notif_2_title: "कीट चेतावनी: फॉल आर्मीवॉर्म",
-      alert_notif_2_desc: "श्रीरंगपट्टनम गांव में देखा गया। धब्बे दिखने पर नीम के अर्क का छिड़काव करें।"
+      alert_notif_2_desc: "श्रीरंगपट्टनम गांव में देखा गया। धब्बे दिखने पर नीम के अर्क का छिड़काव करें।",
+      farm_details_title: "मेरे खेत का विवरण",
+      crop_type_lbl: "फसल का प्रकार",
+      crop_stage_lbl: "फसल का चरण",
+      active_crop_subtitle: "मेरी सक्रिय फसल",
+      crop_growth_progress: "फसल विकास प्रगति",
+      crop_tomato: "टमाटर",
+      crop_paddy: "धान (चावल)",
+      crop_ragi: "रागी",
+      crop_sugarcane: "गन्ना",
+      crop_maize: "मक्का",
+      stage_sowing: "बुवाई / नर्सरी",
+      stage_vegetative: "वानस्पतिक विकास",
+      stage_flowering: "फूल आने का चरण",
+      stage_fruiting: "फल आने का चरण",
+      stage_harvesting: "कटाई का चरण"
     },
     kn: {
       splash_tagline: "ಮುನ್ಸೂಚನೆಗಳನ್ನು ಕೃಷಿ ನಿರ್ಧಾರಗಳಾಗಿ ಪರಿವರ್ತಿಸಿ",
@@ -3379,7 +3535,22 @@
       alert_notif_1_title: "ಭಾರೀ ಮಳೆಯ ಎಚ್ಚರಿಕೆ (ಮಂಡ್ಯ ಪ್ರದೇಶ)",
       alert_notif_1_desc: "ಮುಂದಿನ 24 ಗಂಟೆಗಳಲ್ಲಿ 45 ಮಿಮೀಗಿಂತ ಹೆಚ್ಚು ಮಳೆಯಾಗುವ ಸಾಧ್ಯತೆ. ಚರಂಡಿಗಳನ್ನು ಸ್ವಚ್ಛಗೊಳಿಸಿ.",
       alert_notif_2_title: "ಕೀಟ ಎಚ್ಚರಿಕೆ: ಫಾಲ್ ಆರ್ಮಿವರ್ಮ್",
-      alert_notif_2_desc: "ಶ್ರೀರಂಗಪಟ್ಟಣ ಗ್ರಾಮದಲ್ಲಿ ಪತ್ತೆಯಾಗಿದೆ. ಚುಕ್ಕೆಗಳು ಕಂಡುಬಂದರೆ ಬೇವಿನ ಹಿಂಡಿ ರಸ ಸಿಂಪಡಿಸಿ."
+      alert_notif_2_desc: "ಶ್ರೀರಂಗಪಟ್ಟಣ ಗ್ರಾಮದಲ್ಲಿ ಪತ್ತೆಯಾಗಿದೆ. ಚುಕ್ಕೆಗಳು ಕಂಡುಬಂದರೆ ಬೇವಿನ ಹಿಂಡಿ ರಸ ಸಿಂಪಡಿಸಿ.",
+      farm_details_title: "ನನ್ನ ಕೃಷಿ ವಿವರಗಳು",
+      crop_type_lbl: "ಬೆಳೆ ಮಾದರಿ",
+      crop_stage_lbl: "ಬೆಳವಣಿಗೆಯ ಹಂತ",
+      active_crop_subtitle: "ನನ್ನ ಸಕ್ರಿಯ ಬೆಳೆ",
+      crop_growth_progress: "ಬೆಳವಣಿಗೆಯ ಹಂತದ ಪ್ರಗತಿ",
+      crop_tomato: "ಟೊಮ್ಯಾಟೋ",
+      crop_paddy: "ಭತ್ತ (ಅಕ್ಕಿ)",
+      crop_ragi: "ರಾಗಿ",
+      crop_sugarcane: "ಕಬ್ಬು",
+      crop_maize: "ಜೋಳ",
+      stage_sowing: "ಬಿತ್ತನೆ / ಸಸಿಮಡಿ",
+      stage_vegetative: "ಬೆಳವಣಿಗೆಯ ಹಂತ",
+      stage_flowering: "ಹೂಬಿಡುವ ಹಂತ",
+      stage_fruiting: "ಕಾಯಿ ಕಟ್ಟುವ ಹಂತ",
+      stage_harvesting: "ಕೊಯ್ಲು ಹಂತ"
     }
   };
 
@@ -3429,12 +3600,15 @@
     }
 
     // Dynamic calendar tasks update on language change
-    const activeDayEl = document.querySelector('.cal-day.active');
-    if (activeDayEl) {
-      const dayNumSpan = activeDayEl.querySelector('.cal-day-num');
-      if (dayNumSpan) {
-        renderCalendarTasks(parseInt(dayNumSpan.innerText));
-      }
+    if (document.getElementById('screen-calendar') && document.getElementById('screen-calendar').classList.contains('active')) {
+      refreshCalendarUI();
+    }
+    
+    // Reload farm details translation
+    const storedCrop = localStorage.getItem('userCrop') || 'tomato';
+    const storedStage = localStorage.getItem('userCropStage') || 'flowering';
+    if (typeof updateHomeCropDisplay === 'function') {
+      updateHomeCropDisplay(storedCrop, storedStage);
     }
   }
 
@@ -3724,15 +3898,7 @@
       clearInterval(flashInterval);
       document.getElementById('phone-bezel-outer').classList.remove('sos-flashing');
     } else if (screenId === 'screen-calendar') {
-      const activeDayEl = document.querySelector('.cal-day.active');
-      if (activeDayEl) {
-        const dayNumSpan = activeDayEl.querySelector('.cal-day-num');
-        if (dayNumSpan) {
-          renderCalendarTasks(parseInt(dayNumSpan.innerText));
-        }
-      } else {
-        renderCalendarTasks(4); // default to Tue 4
-      }
+      refreshCalendarUI();
     }
   }
 
@@ -3998,30 +4164,38 @@
   // 12. Interactive AI Chatbot — Keyword-Matching Response Engine
   const chatResponses = {
     en: {
-      greetings: { keywords: ['hi','hello','hey','good morning','good evening','namaste','namaskara'], response: "Hello Ramesh! 🌾 Welcome back. Today in Mandya: 28°C, 82% humidity, 73% rain probability. How can I help you with your farm today?", recs: ["Ask me about weather, crops, diseases, or irrigation.", "Citation: FarmCast AI Local Intelligence."] },
-      weather: { keywords: ['weather','rain','forecast','temp','temperature','climate','wind','storm','barish','maale'], response: "Current Mandya Weather: Temperature 28°C, Humidity 82%, Wind 12 km/h SW. Rain probability is 73% for the next 24 hours with expected 35mm precipitation. UV Index: Moderate.", recs: ["Delay any outdoor spraying until dry window opens Friday.", "Clear field drainage channels today.", "Cover harvested produce with tarpaulins.", "Citation: Indian Meteorological Dept (IMD) Mandya Station."] },
-      crop: { keywords: ['crop','paddy','ragi','sugarcane','tomato','harvest','yield','plant','seed','sow'], response: "Based on current climate conditions for Mandya: Tomato crops are at moderate risk due to high humidity (blossom drop risk). Paddy is in good standing with adequate water. Ragi harvest window opens next week if rain subsides.", recs: ["Harvest tomatoes before Friday rain event.", "Apply calcium foliar spray to strengthen tomato pedicels.", "Check the Crop Calendar for detailed scheduling.", "Citation: UAS Bangalore Agronomy Advisory."] },
-      disease: { keywords: ['disease','pest','leaf','blight','worm','bug','fungus','infection','roga','spot'], response: "⚠️ Alert: Fall Armyworm outbreak reported in Srirangapatna (4.2km from your farm). Current humidity (82%) also increases Early Blight risk for tomatoes. I recommend scanning your leaves immediately.", recs: ["Use the Disease Scanner (camera icon) to analyze leaf spots.", "Apply Neem Seed Kernel Extract as organic prevention.", "Avoid chemical spraying during rain — wait for dry window.", "Citation: UAS Dharwad Pest Control Handbook."] },
-      water: { keywords: ['water','irrigation','irrigate','drought','dry','niru','reservoir','lake','moisture'], response: "Soil moisture in your area: 76% (above optimal). Hulikere Lake reservoir is at 32% capacity. Given 73% rain probability tomorrow, irrigation is NOT recommended today.", recs: ["Postpone irrigation until Friday.", "Switch to drip irrigation to conserve water (saves ~40%).", "Check Village Dashboard for canal water rotation schedule.", "Citation: IMD + Karnataka Water Resources Dept."] },
-      emergency: { keywords: ['help','sos','emergency','danger','flood','cyclone','disaster'], response: "🚨 Emergency Mode: I can connect you to disaster support immediately. Mandya District Emergency Control Room: 08232-222333. Nearest relief shelter: Hulikere Community Hall (1.2km).", recs: ["Press the SOS button on the Emergency screen for live location sharing.", "Store emergency supplies: water, torch, documents in waterproof bag.", "Citation: NDMA Disaster Preparedness Guidelines."] },
-      village: { keywords: ['village','community','cooperative','gram','neighbor','nearby','farmer','panchayat'], response: "Village Dashboard: 847 active farmers in Mandya cluster. Hulikere Lake at 32% capacity. 3 community alerts active. Canal water rotation moves to North Sector on Thursday 6:00 AM.", recs: ["Check Community Map for nearby farmer reports.", "Report any local hazards via the Report button.", "Citation: Mandya District Cooperative Society."] },
-      scheme: { keywords: ['scheme','subsidy','government','yojana','sarkari','pm','kisan','loan','insurance'], response: "Active Government Schemes for Mandya farmers:\n1. PM Krishi Sinchayee Yojana — 80% subsidy on micro-drip irrigation\n2. PM Fasal Bima Yojana — Crop insurance enrollment open\n3. Karnataka Raitha Siri — Interest-free crop loans up to ₹3 lakh", recs: ["Apply for PMKSY through your nearest Krishi Kendra.", "Enrollment deadline for crop insurance: July 31st.", "Citation: Ministry of Agriculture & Karnataka State Portal."] },
-      calendar: { keywords: ['calendar','schedule','plan','when','date','week','month','season'], response: "Upcoming Crop Calendar Events:\n• Today: Monitor drainage (rain expected)\n• Thu: Canal water rotation — North Sector\n• Fri AM: Safe pesticide spray window (8-11 AM)\n• Next Week: Ragi harvest window opens\n• Jul 15: Paddy transplanting deadline", recs: ["Set reminders in the Crop Calendar screen.", "Adjust schedules based on weekly weather updates.", "Citation: UAS Bangalore Seasonal Advisory 2024."] }
+      greetings: { keywords: ['hi','hello','hey','good morning','good evening','namaste','namaskara','greeting'], response: "Hello Ramesh! 🌾 Welcome back. Today in Mandya: 28°C, 82% humidity, 73% rain probability. How can I help you with your farm today?", recs: ["Ask me about weather, crops, diseases, or irrigation.", "Citation: FarmCast AI Local Intelligence."] },
+      weather: { keywords: ['weather','rain','forecast','temp','temperature','climate','wind','storm','barish','maale','weather report','rainfall','cloud','cold','hot','dry','mausam'], response: "Current Mandya Weather: Temperature 28°C, Humidity 82%, Wind 12 km/h SW. Rain probability is 73% for the next 24 hours with expected 35mm precipitation. UV Index: Moderate.", recs: ["Delay any outdoor spraying until dry window opens Friday.", "Clear field drainage channels today.", "Cover harvested produce with tarpaulins.", "Citation: Indian Meteorological Dept (IMD) Mandya Station."] },
+      crop: { keywords: ['crop','paddy','ragi','sugarcane','tomato','harvest','yield','plant','seed','sow','crops','farming','stage','growth','flower','fruit','damage'], response: "Based on current climate conditions for Mandya: Tomato crops are at moderate risk due to high humidity (blossom drop risk). Paddy is in good standing with adequate water. Ragi harvest window opens next week if rain subsides.", recs: ["Harvest tomatoes before Friday rain event.", "Apply calcium foliar spray to strengthen tomato pedicels.", "Check the Crop Calendar for detailed scheduling.", "Citation: UAS Bangalore Agronomy Advisory."] },
+      disease: { keywords: ['disease','pest','leaf','blight','worm','bug','fungus','infection','roga','spot','pesticide','spray','chemical','organic','neem','insecticide','fungicide','treatment','recommend','armyworm'], response: "⚠️ Alert: Fall Armyworm outbreak reported in Srirangapatna (4.2km from your farm). Current humidity (82%) also increases Early Blight risk for tomatoes. I recommend scanning your leaves immediately.", recs: ["Use the Disease Scanner (camera icon) to analyze leaf spots.", "Apply Neem Seed Kernel Extract as organic prevention.", "Avoid chemical spraying during rain — wait for dry window.", "Citation: UAS Dharwad Pest Control Handbook."] },
+      water: { keywords: ['water','irrigation','irrigate','drought','dry','niru','reservoir','lake','moisture','canal','dam','well','water status','dampness'], response: "Soil moisture in your area: 76% (above optimal). Hulikere Lake reservoir is at 32% capacity. Given 73% rain probability tomorrow, irrigation is NOT recommended today.", recs: ["Postpone irrigation until Friday.", "Switch to drip irrigation to conserve water (saves ~40%).", "Check Village Dashboard for canal water rotation schedule.", "Citation: IMD + Karnataka Water Resources Dept."] },
+      emergency: { keywords: ['help','sos','emergency','danger','flood','cyclone','disaster','rescue','relief','alert','warning'], response: "🚨 Emergency Mode: I can connect you to disaster support immediately. Mandya District Emergency Control Room: 08232-222333. Nearest relief shelter: Hulikere Community Hall (1.2km).", recs: ["Press the SOS button on the Emergency screen for live location sharing.", "Store emergency supplies: water, torch, documents in waterproof bag.", "Citation: NDMA Disaster Preparedness Guidelines."] },
+      village: { keywords: ['village','community','cooperative','gram','neighbor','nearby','farmer','panchayat','cluster','coop'], response: "Village Dashboard: 847 active farmers in Mandya cluster. Hulikere Lake at 32% capacity. 3 community alerts active. Canal water rotation moves to North Sector on Thursday 6:00 AM.", recs: ["Check Community Map for nearby farmer reports.", "Report any local hazards via the Report button.", "Citation: Mandya District Cooperative Society."] },
+      scheme: { keywords: ['scheme','subsidy','government','yojana','sarkari','pm','kisan','loan','insurance','financial','benefit','raitha siri'], response: "Active Government Schemes for Mandya farmers:\n1. PM Krishi Sinchayee Yojana — 80% subsidy on micro-drip irrigation\n2. PM Fasal Bima Yojana — Crop insurance enrollment open\n3. Karnataka Raitha Siri — Interest-free crop loans up to ₹3 lakh", recs: ["Apply for PMKSY through your nearest Krishi Kendra.", "Enrollment deadline for crop insurance: July 31st.", "Citation: Ministry of Agriculture & Karnataka State Portal."] },
+      calendar: { keywords: ['calendar','schedule','plan','when','date','week','month','season','timeline','event','task','reminder'], response: "Upcoming Crop Calendar Events:\n• Today: Monitor drainage (rain expected)\n• Thu: Canal water rotation — North Sector\n• Fri AM: Safe pesticide spray window (8-11 AM)\n• Next Week: Ragi harvest window opens\n• Jul 15: Paddy transplanting deadline", recs: ["Set reminders in the Crop Calendar screen.", "Adjust schedules based on weekly weather updates.", "Citation: UAS Bangalore Seasonal Advisory 2024."] }
     },
     hi: {
-      greetings: { keywords: ['hi','hello','hey','namaste','namaskar','pranam'], response: "नमस्ते रमेश! 🌾 आज मांड्या में: 28°C, आर्द्रता 82%, बारिश की संभावना 73%। मैं आपकी खेती में कैसे मदद कर सकता हूं?", recs: ["मुझसे मौसम, फसल, बीमारी या सिंचाई के बारे में पूछें।", "Citation: FarmCast AI"] },
-      weather: { keywords: ['weather','rain','mausam','barish','temp','tapman','thand','garmi','hawa'], response: "मांड्या मौसम: तापमान 28°C, आर्द्रता 82%, हवा 12 km/h दक्षिण-पश्चिम। अगले 24 घंटों में बारिश की 73% संभावना, अपेक्षित वर्षा 35mm।", recs: ["शुक्रवार तक छिड़काव टालें।", "खेत की नालियां साफ करें।", "Citation: IMD मांड्या स्टेशन"] },
-      crop: { keywords: ['fasal','crop','dhan','paddy','ragi','ganna','tamatar','tomato'], response: "वर्तमान जलवायु परिस्थितियों में: टमाटर की फसल को उच्च आर्द्रता से मध्यम जोखिम है। धान अच्छी स्थिति में है। रागी की कटाई अगले सप्ताह खुलती है।", recs: ["शुक्रवार की बारिश से पहले टमाटर की कटाई करें।", "फसल कैलेंडर देखें।", "Citation: UAS बैंगलोर"] },
-      disease: { keywords: ['bimari','rog','keeda','keet','patta','leaf','dhabb','spot'], response: "⚠️ चेतावनी: श्रीरंगपट्टना में फॉल आर्मीवर्म का प्रकोप। उच्च आर्द्रता (82%) से टमाटर में अर्ली ब्लाइट का खतरा बढ़ा है।", recs: ["पत्ती स्कैनर का उपयोग करें।", "नीम बीज अर्क लगाएं।", "Citation: UAS धारवाड़"] },
-      water: { keywords: ['pani','sinchai','irrigate','sukha','drought','nadi','talab'], response: "मिट्टी की नमी: 76%। हुलिकेरे झील 32% पर है। कल 73% बारिश की संभावना के कारण आज सिंचाई की सिफारिश नहीं है।", recs: ["शुक्रवार तक सिंचाई टालें।", "ड्रिप सिंचाई अपनाएं।", "Citation: IMD + कर्नाटक जल संसाधन"] },
+      greetings: { keywords: ['hi','hello','hey','namaste','namaskar','pranam','नमस्ते','नमस्कार','प्रणाम','राम राम'], response: "नमस्ते रमेश! 🌾 आज मांड्या में: 28°C, आर्द्रता 82%, बारिश की संभावना 73%। मैं आपकी खेती में कैसे मदद कर सकता हूं?", recs: ["मुझसे मौसम, फसल, बीमारी या सिंचाई के बारे में पूछें।", "Citation: FarmCast AI"] },
+      weather: { keywords: ['weather','rain','mausam','barish','temp','tapman','thand','garmi','hawa','मौसम','बारिश','वर्षा','पानी','हवा','तापमान','आंधी','तूफान'], response: "मांड्या मौसम: तापमान 28°C, आर्द्रता 82%, हवा 12 km/h दक्षिण-पश्चिम। अगले 24 घंटों में बारिश की 73% संभावना, अपेक्षित वर्षा 35mm।", recs: ["शुक्रवार तक छिड़काव टालें।", "खेत की नालियां साफ करें।", "Citation: IMD मांड्या स्टेशन"] },
+      crop: { keywords: ['fasal','crop','dhan','paddy','ragi','ganna','tamatar','tomato','फसल','धान','रागी','टमाटर','गन्ना','कटाई','पैदावार','बुवाई','उपज'], response: "वर्तमान जलवायु परिस्थितियों में: टमाटर की फसल को उच्च आर्द्रता से मध्यम जोखिम है। धान अच्छी स्थिति में है। रागी की कटाई अगले सप्ताह खुलती है।", recs: ["शुक्रवार की बारिश से पहले टमाटर की कटाई करें।", "फसल कैलेंडर देखें।", "Citation: UAS बैंगलोर"] },
+      disease: { keywords: ['bimari','rog','keeda','keet','patta','leaf','dhabb','spot','pesticide','spray','बीमारी','रोग','कीड़ा','पत्ता','धब्बा','छिड़काव','दवाई','कीटनाशक','फंगस'], response: "⚠️ चेतावनी: श्रीरंगपट्टना में फॉल आर्मीवर्म का प्रकोप। उच्च आर्द्रता (82%) से टमाटर में अर्ली ब्लाइट का खतरा बढ़ा है।", recs: ["पत्ती स्कैनर का उपयोग करें।", "नीम बीज अर्क लगाएं।", "Citation: UAS धारवाड़"] },
+      water: { keywords: ['pani','sinchai','irrigate','sukha','drought','nadi','talab','moisture','पानी','सिंचाई','सूखा','नमी','तालाब','नहर','बांध'], response: "मिट्टी की नमी: 76%। हुलिकेरे झील 32% पर है। कल 73% बारिश की संभावना के कारण आज सिंचाई की सिफारिश नहीं है।", recs: ["शुक्रवार तक सिंचाई टालें।", "ड्रिप सिंचाई अपनाएं।", "Citation: IMD + कर्नाटक जल संसाधन"] },
+      emergency: { keywords: ['help','sos','emergency','danger','flood','cyclone','disaster','मदद','आपातकाल','खतरा','बाढ़','आपदा','सुरक्षा','राहत','एसओएस'], response: "🚨 आपातकालीन मोड: मैं आपको तुरंत आपदा सहायता से जोड़ सकता हूं। मंड्या जिला आपातकालीन नियंत्रण कक्ष: 08232-222333। निकटतम राहत शिविर: हुलिकेरे कम्युनिटी हॉल (1.2 किमी)।", recs: ["लाइव लोकेशन साझा करने के लिए आपातकालीन स्क्रीन पर एसओएस बटन दबाएं।", "आपातकालीन आपूर्ति सुरक्षित रखें: पानी, टॉर्च, दस्तावेज।", "Citation: राष्ट्रीय आपदा प्रबंधन दिशानिर्देश (NDMA)।"] },
+      village: { keywords: ['village','community','cooperative','gram','neighbor','nearby','farmer','panchayat','cluster','coop','गाँव','समुदाय','सहकारी','ग्राम','पड़ोसी','किसान','पंचायत'], response: "ग्राम डैशबोर्ड: मांड्या क्लस्टर में 847 सक्रिय किसान हैं। हुलिकेरे झील 32% क्षमता पर है। 3 सामुदायिक चेतावनियां सक्रिय हैं। नहर जल आवंटन रोटेशन गुरुवार सुबह 6:00 बजे उत्तर क्षेत्र में शुरू होगा।", recs: ["आस-पास के किसानों की रिपोर्ट देखने के लिए सामुदायिक मानचित्र देखें।", "सामुदायिक मानचित्र पर समस्याओं की रिपोर्ट करें।", "Citation: मांड्या जिला सहकारी समिति।"] },
+      scheme: { keywords: ['scheme','subsidy','government','yojana','sarkari','pm','kisan','loan','insurance','financial','benefit','योजना','सब्सिडी','सरकार','सरकारी','ऋण','बीमा','लोन','फायदा'], response: "मांड्या किसानों के लिए सक्रिय सरकारी योजनाएं:\n1. पीएम कृषि सिंचाई योजना — ड्रिप सिंचाई पर 80% सब्सिडी\n2. पीएम फसल बीमा योजना — फसल बीमा खुला है\n3. कर्नाटक रैथा सिरी — ₹3 लाख तक ब्याज मुक्त ऋण", recs: ["अपने नजदीकी कृषि केंद्र से पीएमकेएसवाई के लिए आवेदन करें।", "फसल बीमा की अंतिम तिथि: 31 जुलाई।", "Citation: कृषि मंत्रालय और कर्नाटक राज्य पोर्टल।"] },
+      calendar: { keywords: ['calendar','schedule','plan','when','date','week','month','season','timeline','event','task','reminder','कैलेंडर','अनुसूची','योजना','तारीख','सप्ताह','महीना','मौसम'], response: "आगामी फसल कैलेंडर गतिविधियां:\n• आज: जल निकासी की निगरानी करें (बारिश की संभावना)\n• गुरुवार: नहर जल आवंटन — उत्तर क्षेत्र\n• शुक्रवार सुबह: सुरक्षित कीटनाशक छिड़काव समय (सुबह 8-11 बजे)\n• अगला सप्ताह: रागी कटाई का समय\n• 15 जुलाई: धान रोपाई की समय सीमा", recs: ["फसल कैलेंडर स्क्रीन पर रिमाइंडर सेट करें।", "साह-दर-सप्ताह योजना समायोजित करें।", "Citation: UAS बैंगलोर मौसमी सलाह 2024।"] },
       fallback: { response: "मैंने आपके प्रश्न का मांड्या के स्थानीय जलवायु डेटा से विश्लेषण किया है। वर्तमान स्थिति स्थिर है। कृपया विशिष्ट विषय पूछें — मौसम, फसल, बीमारी, सिंचाई, या सरकारी योजनाएं।", recs: ["फसल कैलेंडर में दैनिक अलर्ट देखें।", "Citation: FarmCast AI"] }
     },
     kn: {
-      greetings: { keywords: ['hi','hello','hey','namaskara','shubhodaya'], response: "ನಮಸ್ಕಾರ ರಮೇಶ್! 🌾 ಇಂದು ಮಂಡ್ಯದಲ್ಲಿ: 28°C, ತೇವಾಂಶ 82%, ಮಳೆ ಸಾಧ್ಯತೆ 73%. ನಿಮ್ಮ ಕೃಷಿಗೆ ನಾನು ಹೇಗೆ ಸಹಾಯ ಮಾಡಬಹುದು?", recs: ["ಹವಾಮಾನ, ಬೆಳೆ, ರೋಗ ಅಥವಾ ನೀರಾವರಿ ಬಗ್ಗೆ ಕೇಳಿ.", "Citation: FarmCast AI"] },
-      weather: { keywords: ['weather','rain','male','maale','havaman','temp','bisilu','chali','gaali'], response: "ಮಂಡ್ಯ ಹವಾಮಾನ: ತಾಪಮಾನ 28°C, ತೇವಾಂಶ 82%, ಗಾಳಿ 12 km/h. ಮುಂದಿನ 24 ಗಂಟೆಗಳಲ್ಲಿ ಮಳೆ ಸಾಧ್ಯತೆ 73%, ನಿರೀಕ್ಷಿತ ಮಳೆ 35mm.", recs: ["ಶುಕ್ರವಾರದವರೆಗೆ ಸಿಂಪಡಣೆ ಮುಂದೂಡಿ.", "ಹೊಲದ ಕಾಲುವೆಗಳನ್ನು ಸ್ವಚ್ಛಗೊಳಿಸಿ.", "Citation: IMD ಮಂಡ್ಯ"] },
-      crop: { keywords: ['bele','crop','bhatta','paddy','ragi','kabbu','tomato'], response: "ಪ್ರಸ್ತುತ ಹವಾಮಾನದಲ್ಲಿ: ಟೊಮ್ಯಾಟೋ ಬೆಳೆಗೆ ಮಧ್ಯಮ ಅಪಾಯ. ಭತ್ತ ಉತ್ತಮ ಸ್ಥಿತಿಯಲ್ಲಿದೆ. ಮುಂದಿನ ವಾರ ರಾಗಿ ಕೊಯ್ಲು ಆರಂಭ.", recs: ["ಶುಕ್ರವಾರದ ಮಳೆಗೆ ಮುಂಚೆ ಟೊಮ್ಯಾಟೋ ಕೊಯ್ಲು ಮಾಡಿ.", "Citation: UAS ಬೆಂಗಳೂರು"] },
-      disease: { keywords: ['roga','keeta','ele','leaf','kale','haavu','hulu'], response: "⚠️ ಎಚ್ಚರಿಕೆ: ಶ್ರೀರಂಗಪಟ್ಟಣದಲ್ಲಿ ಫಾಲ್ ಆರ್ಮಿವರ್ಮ್ ಕಾಣಿಸಿಕೊಂಡಿದೆ. ಹೆಚ್ಚಿನ ತೇವಾಂಶ (82%) ಟೊಮ್ಯಾಟೋದಲ್ಲಿ ಅರ್ಲಿ ಬ್ಲೈಟ್ ಅಪಾಯವನ್ನು ಹೆಚ್ಚಿಸಿದೆ.", recs: ["ಎಲೆ ಸ್ಕ್ಯಾನರ್ ಬಳಸಿ.", "ಬೇವಿನ ಬೀಜ ಸಾರ ಬಳಸಿ.", "Citation: UAS ಧಾರವಾಡ"] },
-      water: { keywords: ['niru','neeru','irrigation','bari','odale','kere','dam'], response: "ಮಣ್ಣಿನ ತೇವಾಂಶ: 76%. ಹುಳಿಕೆರೆ ಕೆರೆ 32% ಸಾಮರ್ಥ್ಯದಲ್ಲಿದೆ. ನಾಳೆ 73% ಮಳೆ ಸಾಧ್ಯತೆಯಿಂದ ಇಂದು ನೀರಾವರಿ ಶಿಫಾರಸು ಇಲ್ಲ.", recs: ["ಶುಕ್ರವಾರದವರೆಗೆ ನೀರಾವರಿ ಮುಂದೂಡಿ.", "ಹನಿ ನೀರಾವರಿ ಅಳವಡಿಸಿ.", "Citation: IMD + ಕರ್ನಾಟಕ ಜಲ ಸಂಪನ್ಮೂಲ"] },
+      greetings: { keywords: ['hi','hello','hey','namaskara','shubhodaya','ನಮಸ್ಕಾರ','ಶುಭೋದಯ'], response: "ನಮಸ್ಕಾರ ರಮೇಶ್! 🌾 ಇಂದು ಮಂಡ್ಯದಲ್ಲಿ: 28°C, ತೇವಾಂಶ 82%, ಮಳೆ ಸಾಧ್ಯತೆ 73%. ನಿಮ್ಮ ಕೃಷಿಗೆ ನಾನು ಹೇಗೆ ಸಹಾಯ ಮಾಡಬಹುದು?", recs: ["ಹವಾಮಾನ, ಬೆಳೆ, ರೋಗ ಅಥವಾ ನೀರಾವರಿ ಬಗ್ಗೆ ಕೇಳಿ.", "Citation: FarmCast AI"] },
+      weather: { keywords: ['weather','rain','male','maale','havaman','temp','bisilu','chali','gaali','ಮಳೆ','ಹವಾಮಾನ','ತಾಪಮಾನ','ಗಾಳಿ','ಬಿಸಿಲು','ಚಳಿ','ಮೋಡ'], response: "ಮಂಡ್ಯ ಹವಾಮಾನ: ತಾಪಮಾನ 28°C, ತೇವಾಂಶ 82%, ಗಾಳಿ 12 km/h. ಮುಂದಿನ 24 ಗಂಟೆಗಳಲ್ಲಿ ಮಳೆ ಸಾಧ್ಯತೆ 73%, ನಿರೀಕ್ಷಿತ ಮಳೆ 35mm.", recs: ["ಶುಕ್ರವಾರದವರೆಗೆ ಸಿಂಪಡಣೆ ಮುಂದೂಡಿ.", "ಹೊಲದ ಕಾಲುವೆಗಳನ್ನು ಸ್ವಚ್ಛಗೊಳಿಸಿ.", "Citation: IMD ಮಂಡ್ಯ"] },
+      crop: { keywords: ['bele','crop','bhatta','paddy','ragi','kabbu','tomato','ಬೆಳೆ','ಭತ್ತ','ರಾಗಿ','ಕಬ್ಬು','ಟೊಮ್ಯಾಟೋ','ಕೊಯ್ಲು','ಇಳುವರಿ','ಬಿತ್ತನೆ'], response: "ಪ್ರಸ್ತುತ ಹವಾಮಾನದಲ್ಲಿ: ಟೊಮ್ಯಾಟೋ ಬೆಳೆಗೆ ಮಧ್ಯಮ ಅಪಾಯ. ಭತ್ತ ಉತ್ತಮ ಸ್ಥಿತಿಯಲ್ಲಿದೆ. ಮುಂದಿನ ವಾರ ರಾಗಿ ಕೊಯ್ಲು ಆರಂಭ.", recs: ["ಶುಕ್ರವಾರದ ಮಳೆಗೆ ಮುಂಚೆ ಟೊಮ್ಯಾಟೋ ಕೊಯ್ಲು ಮಾಡಿ.", "Citation: UAS ಬೆಂಗಳೂರು"] },
+      disease: { keywords: ['roga','keeta','ele','leaf','kale','haavu','hulu','ರೋಗ','ಕೀಟ','ಎಲೆ','ಚುಕ್ಕೆ','ಸಿಂಪಡಣೆ','ಕೀಟನಾಶಕ','ಔಷಧಿ'], response: "⚠️ ಎಚ್ಚರಿಕೆ: ಶ್ರೀರಂಗಪಟ್ಟಣದಲ್ಲಿ ಫಾಲ್ ಆರ್ಮಿವರ್ಮ್ ಕಾಣಿಸಿಕೊಂಡಿದೆ. ಹೆಚ್ಚಿನ ತೇವಾಂಶ (82%) ಟೊಮ್ಯಾಟೋದಲ್ಲಿ ಅರ್ಲಿ ಬ್ಲೈಟ್ ಅಪಾಯವನ್ನು ಹೆಚ್ಚಿಸಿದೆ.", recs: ["ಎಲೆ ಸ್ಕ್ಯಾನರ್ ಬಳಸಿ.", "ಬೇವಿನ ಬೀಜ ಸಾರ ಬಳಸಿ.", "Citation: UAS ಧಾರವಾಡ"] },
+      water: { keywords: ['niru','neeru','irrigation','bari','odale','kere','dam','moisture','ನೀರು','ನೀರಾವರಿ','ಹನಿ ನೀರಾವರಿ','ಕೆರೆ','ಅಣೆಕಟ್ಟು','ತೇವಾಂಶ'], response: "ಮಣ್ಣಿನ ತೇವಾಂಶ: 76%. ಹುಳಿಕೆರೆ ಕೆರೆ 32% ಸಾಮರ್ಥ್ಯದಲ್ಲಿದೆ. ನಾಳೆ 73% ಮಳೆ ಸಾಧ್ಯತೆಯಿಂದ ಇಂದು ನೀರಾವರಿ ಶಿಫಾರಸು ಇಲ್ಲ.", recs: ["ಶುಕ್ರವಾರದವರೆಗೆ ನೀರಾವರಿ ಮುಂದೂಡಿ.", "ಹನಿ ನೀರಾವರಿ ಅಳವಡಿಸಿ.", "Citation: IMD + ಕರ್ನಾಟಕ ಜಲ ಸಂಪನ್ಮೂಲ"] },
+      emergency: { keywords: ['help','sos','emergency','danger','flood','cyclone','disaster','ಸಹಾಯ','ತುರ್ತು','ಅಪಾಯ','ಪ್ರವಾಹ','ರಕ್ಷಣೆ','ಎಸ್ಒಎಸ್'], response: "🚨 ತುರ್ತು ಪರಿಸ್ಥಿತಿ ಮೋಡ್: ನಾನು ನಿಮ್ಮನ್ನು ತಕ್ಷಣ ವಿಪತ್ತು ನಿಯಂತ್ರಣ ಕೊಠಡಿಗೆ ಸಂಪರ್ಕಿಸಬಹುದು. ಮಂಡ್ಯ ಜಿಲ್ಲಾ ತುರ್ತು ನಿಯಂತ್ರಣ ಕೊಠಡಿ: 08232-222333. ಹತ್ತಿರದ ಪರಿಹಾರ ಕೇಂದ್ರ: ಹುಳಿಕೆರೆ ಕಮ್ಯುನಿಟಿ ಹಾಲ್ (1.2km).", recs: ["ಲೈವ್ ಸ್ಥಳ ಹಂಚಿಕೊಳ್ಳಲು ತುರ್ತು ಸ್ಕ್ರೀನ್‌ನಲ್ಲಿ SOS ಬಟನ್ ಒತ್ತಿ.", "ತುರ್ತು ಸಾಮಗ್ರಿಗಳನ್ನು ಸಂಗ್ರಹಿಸಿಡಿ: ನೀರು, ಟಾರ್ಚ್, ಪ್ರಮುಖ ದಾಖಲೆಗಳು.", "Citation: NDMA ವಿಪತ್ತು ಸಿದ್ಧತೆ ಮಾರ್ಗಸೂಚಿಗಳು."] },
+      village: { keywords: ['village','community','gram','farmer','panchayat','ಹಳ್ಳಿ','ಗ್ರಾಮ','ಸಹಕಾರ ಸಂಘ','ಪಂಚಾಯತ್','ರೈತ','ನೆರೆಹೊರೆ'], response: "ಗ್ರಾಮ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್: ಮಂಡ್ಯ ಕ್ಲಸ್ಟರ್‌ನಲ್ಲಿ 847 ಸಕ್ರಿಯ ರೈತರು. ಹುಳಿಕೆರೆ ಕೆರೆ 32% ಸಾಮರ್ಥ್ಯದಲ್ಲಿದೆ. 3 ಸಮುದಾಯ ಎಚ್ಚರಿಕೆಗಳು ಸಕ್ರಿಯವಾಗಿವೆ. ಕಾಲುವೆ ನೀರು ಬಿಡುಗಡೆ ಸರದಿಯು ಗುರುವಾರ ಬೆಳಿಗ್ಗೆ 6:00 ಗಂಟೆಗೆ ಉತ್ತರ ವಲಯಕ್ಕೆ ವರ್ಗಾವಣೆಯಾಗಲಿದೆ.", recs: ["ಹತ್ತಿರದ ರೈತರ ವರದಿಗಳಿಗಾಗಿ ಸಮುದಾಯ ನಕ್ಷೆಯನ್ನು ಪರಿಶೀಲಿಸಿ.", "ಸ್ಥಳೀಯ ಅಪಾಯಗಳನ್ನು ವರದಿ ಮಾಡಿ.", "Citation: ಮಂಡ್ಯ ಜಿಲ್ಲಾ ಸಹಕಾರ ಸಂಘ."] },
+      scheme: { keywords: ['scheme','subsidy','government','yojana','sarkari','pm','kisan','loan','insurance','raitha siri','ಯೋಜನೆ','ಸಬ್ಸಿಡಿ','ಸರ್ಕಾರ','ಸಾಲ','ವಿಮೆ','ರೈತ ಸಿರಿ'], response: "ಮಂಡ್ಯ ರೈತರಿಗೆ ಸಕ್ರಿಯ ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು:\n1. PM ಕೃಷಿ ಸಿಂಚಾಯಿ ಯೋಜನೆ — ಸೂಕ್ಷ್ಮ ಹನಿ ನೀರಾವರಿಗೆ 80% ಸಬ್ಸಿಡಿ\n2. PM ಫಸಲ್ ಬಿಮಾ ಯೋಜನೆ — ಬೆಳೆ ವಿಮೆ ನೋಂದಣಿ ಪ್ರಗತಿಯಲ್ಲಿದೆ\n3. ಕರ್ನಾಟಕ ರೈತ ಸಿರಿ — ₹3 ಲಕ್ಷದವರೆಗೆ ಬಡ್ಡಿ ರಹಿತ ಬೆಳೆ ಸಾಲ", recs: ["ನಿಮ್ಮ ಹತ್ತಿರದ ಕೃಷಿ ಕೇಂದ್ರದಲ್ಲಿ PMKSY ಗೆ ಅರ್ಜಿ ಸಲ್ಲಿಸಿ.", "ಬೆಳೆ ವಿಮೆ ನೋಂದಣಿಗೆ ಕೊನೆಯ ದಿನಾಂಕ: ಜುಲೈ 31.", "Citation: ಕೃಷಿ ಸಚಿವಾಲಯ ಮತ್ತು ಕರ್ನಾಟಕ ಪೋರ್ಟಲ್."] },
+      calendar: { keywords: ['calendar','schedule','plan','date','week','month','season','ಕ್ಯಾಲೆಂಡರ್','ವೇಳಾಪಟ್ಟಿ','ಯೋಜನೆ','ದಿನಾಂಕ','ವಾರ','ತಿಂಗಳು','ಋತು'], response: "ಮುಂಬರುವ ಬೆಳೆ ಕ್ಯಾಲೆಂಡರ್ ಘಟನೆಗಳು:\n• ಇಂದು: ಒಳಚರಂಡಿ ಮೇಲ್ವಿಚಾರಣೆ (ಮಳೆ ನಿರೀಕ್ಷಿತ)\n• ಗುರು: ಕಾಲುವೆ ನೀರು ಸರದಿ — ಉತ್ತರ ವಲಯ\n• ಶುಕ್ರ ಬೆಳಿಗ್ಗೆ: ಸುರಕ್ಷಿತ ಕೀಟನಾಶಕ ಸಿಂಪಡಣೆ ಸಮಯ (8-11 AM)\n• ಮುಂದಿನ ವಾರ: ರಾಗಿ ಕೊಯ್ಲು ಹಂತ ಪ್ರಾರಂಭ\n• ಜುಲೈ 15: ಭತ್ತ ನಾಟಿ ಕೊನೆಯ ದಿನಾಂಕ", recs: ["ಬೆಳೆ ಕ್ಯಾಲೆಂಡರ್ ಸ್ಕ್ರೀನ್‌ನಲ್ಲಿ ಜ್ಞಾಪನೆಗಳನ್ನು ಹೊಂದಿಸಿ.", "ವೇಳಾಪಟ್ಟಿ ಹೊಂದಿಸಿ.", "Citation: UAS ಬೆಂಗಳೂರು 2024."] },
       fallback: { response: "ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ಮಂಡ್ಯದ ಸ್ಥಳೀಯ ಹವಾಮಾನ ದತ್ತಾಂಶದೊಂದಿಗೆ ವಿಶ್ಲೇಷಿಸಿದ್ದೇನೆ. ಪ್ರಸ್ತುತ ಸ್ಥಿತಿ ಸ್ಥಿರವಾಗಿದೆ. ದಯವಿಟ್ಟು ನಿರ್ದಿಷ್ಟ ವಿಷಯ ಕೇಳಿ.", recs: ["ಬೆಳೆ ಕ್ಯಾಲೆಂಡರ್‌ನಲ್ಲಿ ದೈನಂದಿನ ಎಚ್ಚರಿಕೆಗಳನ್ನು ಪರಿಶೀಲಿಸಿ.", "Citation: FarmCast AI"] }
     }
   };
@@ -4033,39 +4207,132 @@
     prompt_3: { en: "Pesticide spray recommendations", hi: "कीटनाशक छिड़काव सिफारिशें", kn: "ಕೀಟನಾಶಕ ಸಿಂಪಡಣೆ ಶಿಫಾರಸುಗಳು" }
   };
 
+  const promptResponses = {
+    en: {
+      prompt_1: {
+        response: "🌸 <b>Rainfall & Flowering Tomato Risk Analysis</b><br><br>Yes, tomorrow's expected heavy rainfall (35mm+, 73% probability) poses a <b>HIGH RISK</b> of blossom drop and flower damage for your tomatoes. High humidity combined with physical impact can wash away pollen and trigger early blossom drop.",
+        recs: [
+          "Apply a calcium-boron foliar spray immediately to strengthen flower pedicels.",
+          "Ensure drainage channels are fully cleared to prevent root-zone waterlogging.",
+          "If possible, cover high-value flowering rows with temporary rain-protection tunnels.",
+          "Citation: UAS Bangalore Horticulture Dept."
+        ]
+      },
+      prompt_2: {
+        response: "💧 <b>Irrigation Recommendation for Today</b><br><br>Based on soil moisture sensors reporting <b>76% moisture</b> and 73% rain probability tomorrow, you should <b>DELAY irrigation today</b>. Adding more water now will saturate the root zone, restrict oxygen intake, and increase fungal root rot risk.",
+        recs: [
+          "Keep automated irrigation gates CLOSED.",
+          "Re-evaluate soil moisture levels on Friday morning after the rain event passes.",
+          "Citation: FarmCast Soil Sensor Intelligence."
+        ]
+      },
+      prompt_3: {
+        response: "🐛 <b>Pesticide & Spraying Advisory</b><br><br>Spraying chemical pesticides is <b>NOT recommended</b> today or tomorrow due to the high rainfall probability (73%), as the rain will wash away the active ingredients, resulting in chemical waste and environmental runoff.",
+        recs: [
+          "Wait for the dry spraying window opening Friday morning (8 AM - 11 AM).",
+          "For urgent organic protection, apply Neem Seed Kernel Extract (5% concentration) which has better rain-fast properties.",
+          "Citation: UAS Dharwad Pest Control Handbook."
+        ]
+      }
+    },
+    hi: {
+      prompt_1: {
+        response: "🌸 <b>वर्षा और टमाटर के फूलों को नुकसान का जोखिम विश्लेषण</b><br><br>हां, कल होने वाली भारी बारिश (35 मिमी से अधिक, 73% संभावना) से आपके टमाटर के फूलों को नुकसान होने का <b>उच्च जोखिम</b> है। भारी बारिश फूलों को गिरा सकती है और परागकणों को नष्ट कर सकती है।",
+        recs: [
+          "फूलों को मजबूती देने के लिए तुरंत कैल्शियम-बोरॉन का छिड़काव करें।",
+          "जलभराव से बचने के लिए खेत की नालियों को तुरंत साफ करें।",
+          "Citation: UAS बैंगलोर बागवानी विभाग।"
+        ]
+      },
+      prompt_2: {
+        response: "💧 <b>आज के लिए सिंचाई की सिफारिश</b><br><br>मिट्टी की नमी <b>76%</b> है और कल बारिश की 73% संभावना है। इसलिए, आपको आज <b>सिंचाई टाल देनी चाहिए</b>। अतिरिक्त पानी से जड़ों के गलने का खतरा बढ़ सकता है।",
+        recs: [
+          "स्वचालित सिंचाई गेटों को बंद रखें।",
+          "बारिश समाप्त होने के बाद शुक्रवार सुबह फिर से नमी की जांच करें।",
+          "Citation: फार्मकास्ट मृदा सेंसर।"
+        ]
+      },
+      prompt_3: {
+        response: "🐛 <b>कीटनाशक और छिड़काव सलाह</b><br><br>आज या कल कीटनाशकों का छिड़काव करने की <b>सिफारिश नहीं की जाती है</b>। बारिश के कारण दवाएं बह जाएंगी, जिससे फसल को सुरक्षा नहीं मिलेगी।",
+        recs: [
+          "शुक्रवार सुबह (8 बजे - 11 बजे) के शुष्क छिड़काव समय की प्रतीक्षा करें।",
+          "अत्यधिक आवश्यकता होने पर जैविक नीम के अर्क (5%) का छिड़काव करें।",
+          "Citation: UAS धारवाड़ कीट नियंत्रण गाइड।"
+        ]
+      }
+    },
+    kn: {
+      prompt_1: {
+        response: "🌸 <b>ಮಳೆ ಮತ್ತು ಟೊಮ್ಯಾಟೋ ಹೂವುಗಳ ಹಾನಿಯ ಅಪಾಯದ ವಿಶ್ಲೇಷಣೆ</b><br><br>ಹೌದು, ನಾಳೆಯ ಭಾರೀ ಮಳೆ (35mm+, 73% ಸಾಧ್ಯತೆ) ನಿಮ್ಮ ಟೊಮ್ಯಾಟೋ ಬೆಳೆಯ ಹೂವುಗಳು ಉದುರಲು <b>ಹೆಚ್ಚಿನ ಅಪಾಯವನ್ನು</b> ಉಂಟುಮಾಡಬಹುದು. ಮಳೆಯ ತೀವ್ರತೆಗೆ ಹೂವುಗಳು ಉದುರಿ ಇಳುವರಿ ಕಡಿಮೆಯಾಗುವ ಸಂಭವವಿದೆ.",
+        recs: [
+          "ಹೂವುಗಳ ಬಲವರ್ಧನೆಗೆ ತಕ್ಷಣ ಕ್ಯಾಲ್ಸಿಯಂ-ಬೋರಾನ್ ಸಿಂಪಡಣೆ ಮಾಡಿ.",
+          "ನೀರಾವರಿ ಕಾಲುವೆಗಳಲ್ಲಿ ನೀರು ನಿಲ್ಲದಂತೆ ತಕ್ಷಣ ನೀರನ್ನು ಹೊರಹಾಕಿ.",
+          "Citation: UAS ಬೆಂಗಳೂರು ತೋಟಗಾರಿಕೆ ಇಲಾಖೆ."
+        ]
+      },
+      prompt_2: {
+        response: "💧 <b>ಇಂದಿನ ನೀರಾವರಿ ಶಿಫಾರಸು</b><br><br>ಮಣ್ಣಿನ ತೇವಾಂಶ <b>76%</b> ಇದ್ದು ನಾಳೆ 73% ಮಳೆಯಾಗುವ ಸಾಧ್ಯತೆಯಿರುವುದರಿಂದ, ಇಂದಿನ <b>ನೀರಾವರಿಯನ್ನು ಮುಂದೂಡಿ</b>. ಹೆಚ್ಚಿನ ನೀರು ಕೊಡುವುದರಿಂದ ಬೇರು ಕೊಳೆಯುವ ರೋಗ ತಗುಲಬಹುದು.",
+        recs: [
+          "ನೀರಾವರಿ ಗೇಟ್‌ಗಳನ್ನು ಮುಚ್ಚಿಡಿ.",
+          "ಮಳೆ ಮುಗಿದ ನಂತರ ಶುಕ್ರವಾರ ಬೆಳಿಗ್ಗೆ ತೇವಾಂಶವನ್ನು ಮರು-ಪರಿಶೀಲಿಸಿ.",
+          "Citation: ಫಾರ್ಮ್‌ಕಾಸ್ಟ್ ಮಣ್ಣಿನ ತೇವಾಂಶ ಸೆನ್ಸರ್."
+        ]
+      },
+      prompt_3: {
+        response: "🐛 <b>ಕೀಟನಾಶಕ ಸಿಂಪಡಣೆ ಸಲಹೆ</b><br><br>ಇಂದು ಅಥವಾ ನಾಳೆ ಕೀಟನಾಶಕ ಸಿಂಪಡಣೆ ಮಾಡಲು <b>ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ</b>. ಮಳೆಗೆ ಔಷಧವು ತೊಳೆದು ಹೋಗುವುದರಿಂದ ಯಾವುದೇ ಪ್ರಯೋಜನವಾಗುವುದಿಲ್ಲ.",
+        recs: [
+          "ಶುಕ್ರವಾರ ಬೆಳಿಗ್ಗೆ (8 AM - 11 AM) ಸಿಂಪಡಣೆಗೆ ಸೂಕ್ತ ಒಣ ಸಮಯವಾಗಿದ್ದು ಅಲ್ಲಿಯವರೆಗೆ ಕಾಯಿರಿ.",
+          "ತುರ್ತು ಪರಿಸ್ಥಿತಿಯಲ್ಲಿ ಮಳೆ ನಿರೋಧಕ ಶಕ್ತಿಯಿರುವ 5% ಬೇವಿನ ಬೀಜದ ರಸ ಬಳಸಿ.",
+          "Citation: UAS ಧಾರವಾಡ ಕೀಟ ನಿಯಂತ್ರಣ ಕೈಪಿಡಿ."
+        ]
+      }
+    }
+  };
+
   function processUserMessage(text) {
     const lang = currentLang;
-    const responses = chatResponses[lang] || chatResponses.en;
     const lowerText = text.toLowerCase();
-
-    // Check each category for keyword match
     const categories = ['greetings','weather','crop','disease','water','emergency','village','scheme','calendar'];
-    for (const cat of categories) {
-      const catData = responses[cat];
-      if (!catData) continue;
-      const matched = catData.keywords && catData.keywords.some(kw => lowerText.includes(kw));
-      if (matched) {
-        return { text: catData.response, recs: catData.recs || [] };
+    
+    let bestCategory = null;
+    let maxScore = 0;
+    
+    categories.forEach(cat => {
+      let score = 0;
+      
+      const catData = chatResponses[lang] && chatResponses[lang][cat];
+      if (catData && catData.keywords) {
+        catData.keywords.forEach(kw => {
+          if (lowerText.includes(kw.toLowerCase())) {
+            score += 2;
+          }
+        });
       }
-    }
-
-    // Also check English keywords when in non-English mode (farmers may type in English)
-    if (lang !== 'en') {
-      const enResponses = chatResponses.en;
-      for (const cat of categories) {
-        const catData = enResponses[cat];
-        if (!catData) continue;
-        const matched = catData.keywords && catData.keywords.some(kw => lowerText.includes(kw));
-        if (matched) {
-          // Return response in selected language if available
-          const localCat = responses[cat];
-          if (localCat) return { text: localCat.response, recs: localCat.recs || [] };
-          return { text: catData.response, recs: catData.recs || [] };
+      
+      if (lang !== 'en') {
+        const enData = chatResponses.en[cat];
+        if (enData && enData.keywords) {
+          enData.keywords.forEach(kw => {
+            if (lowerText.includes(kw.toLowerCase())) {
+              score += 1;
+            }
+          });
         }
       }
+      
+      if (score > maxScore) {
+        maxScore = score;
+        bestCategory = cat;
+      }
+    });
+    
+    const responses = chatResponses[lang] || chatResponses.en;
+    
+    if (bestCategory && maxScore > 0) {
+      const bestResponse = responses[bestCategory] || chatResponses.en[bestCategory];
+      return { text: bestResponse.response, recs: bestResponse.recs || [] };
     }
-
-    // Fallback response
+    
     const fb = responses.fallback || chatResponses.en.fallback || {};
     const fbText = fb.response || "I've analyzed your query against local Mandya atmospheric sensors. Current conditions remain stable. Please ask about weather, crops, diseases, irrigation, or government schemes for specific guidance.";
     return { text: fbText, recs: fb.recs || ["Monitor the crop calendar daily for alerts.", "Citation: FarmCast AI."] };
@@ -4105,13 +4372,18 @@
     const promptText = (suggestedPrompts[promptKey] && suggestedPrompts[promptKey][lang]) || suggestedPrompts[promptKey].en;
     appendChatMessage(promptText, 'sent');
     
-    // Process through keyword engine
-    const aiResult = processUserMessage(promptText);
+    // Find prompt-specific response
+    const pResponse = (promptResponses[lang] && promptResponses[lang][promptKey]) || (promptResponses.en && promptResponses.en[promptKey]);
     appendTypingBubble();
     
     setTimeout(() => {
       removeTypingBubble();
-      appendAIChatResponse(aiResult.text, aiResult.recs);
+      if (pResponse) {
+        appendAIChatResponse(pResponse.response, pResponse.recs);
+      } else {
+        const aiResult = processUserMessage(promptText);
+        appendAIChatResponse(aiResult.text, aiResult.recs);
+      }
     }, 1200 + Math.random() * 600);
   }
 
@@ -4336,41 +4608,151 @@
     }
   };
 
-  function selectCalendarDay(el) {
-    document.querySelectorAll('.cal-day').forEach(d => d.classList.remove('active'));
-    el.classList.add('active');
-    const dayNumSpan = el.querySelector('.cal-day-num');
-    if (dayNumSpan) {
-      renderCalendarTasks(parseInt(dayNumSpan.innerText));
+  let currentCalendarDate = new Date();
+  let selectedCalendarDate = new Date();
+  let calendarView = 'week';
+
+  function isSameDay(d1, d2) {
+    return d1.getFullYear() === d2.getFullYear() &&
+           d1.getMonth() === d2.getMonth() &&
+           d1.getDate() === d2.getDate();
+  }
+
+  function selectCalendarDateJS(dateStr) {
+    selectedCalendarDate = new Date(dateStr);
+    if (calendarView === 'month') {
+      const clickedDate = new Date(dateStr);
+      if (clickedDate.getMonth() !== currentCalendarDate.getMonth()) {
+        currentCalendarDate = new Date(clickedDate);
+      }
+    }
+    refreshCalendarUI();
+  }
+
+  function switchCalendarView(view) {
+    calendarView = view;
+    document.querySelectorAll('.btn-toggle').forEach(btn => btn.classList.remove('active'));
+    if (view === 'week') {
+      document.getElementById('btn-view-week').classList.add('active');
+    } else {
+      document.getElementById('btn-view-month').classList.add('active');
+    }
+    refreshCalendarUI();
+  }
+
+  function navigateCalendar(direction) {
+    if (calendarView === 'week') {
+      currentCalendarDate.setDate(currentCalendarDate.getDate() + direction * 7);
+    } else {
+      currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction);
+    }
+    refreshCalendarUI();
+  }
+
+  function updateCalendarHeader() {
+    const titleEl = document.getElementById('calendar-header-title');
+    if (!titleEl) return;
+
+    const monthNames = {
+      en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+      hi: ['जनवरी', 'फरवरी', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर'],
+      kn: ['ಜನವರಿ', 'ಫೆಬ್ರವರಿ', 'ಮಾರ್ಚ್', 'ಏಪ್ರಿಲ್', 'ಮೇ', 'ಜೂನ್', 'ಜುಲೈ', 'ಆಗಸ್ಟ್', 'ಸೆಪ್ಟೆಂಬರ್', 'ಅಕ್ಟೋಬರ್', 'ನವೆಂಬರ್', 'ಡಿಸೆಂಬರ್']
+    };
+
+    const lang = currentLang || 'en';
+    const monthStr = (monthNames[lang] || monthNames['en'])[currentCalendarDate.getMonth()];
+    const yearStr = currentCalendarDate.getFullYear();
+
+    titleEl.innerText = `${monthStr} ${yearStr}`;
+
+    const headerDays = {
+      en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      hi: ['रवि', 'सोम', 'मंगल', 'बुध', 'गुरु', 'शुक्र', 'शनि'],
+      kn: ['ಭಾನು', 'ಸೋಮ', 'ಮಂಗಳ', 'ಬುಧ', 'ಗುರು', 'ಶುಕ್ರ', 'ಶನಿ']
+    };
+    const headerEl = document.getElementById('month-grid-header');
+    if (headerEl) {
+      const days = headerDays[lang] || headerDays['en'];
+      headerEl.innerHTML = days.map(d => `<span>${d}</span>`).join('');
     }
   }
 
-  function renderCalendarTasks(dayNum) {
-    const container = document.getElementById('calendar-timeline');
-    if (!container) return;
+  function renderWeekView() {
+    const strip = document.getElementById('calendar-week-container');
+    if (!strip) return;
 
+    const startOfWeek = new Date(currentCalendarDate);
+    const day = startOfWeek.getDay();
+    startOfWeek.setDate(startOfWeek.getDate() - day);
+
+    const dayNames = {
+      en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      hi: ['रवि', 'सोम', 'मंगल', 'बुध', 'गुरु', 'शुक्र', 'शनि'],
+      kn: ['ಭಾನು', 'ಸೋಮ', 'ಮಂಗಳ', 'ಬುಧ', 'ಗುರು', 'ಶುಕ್ರ', 'ಶನಿ']
+    };
     const lang = currentLang || 'en';
-    const dayTasks = (calendarTasks[lang] && calendarTasks[lang][dayNum]) || (calendarTasks['en'] && calendarTasks['en'][dayNum]) || [];
+    const names = dayNames[lang] || dayNames['en'];
 
     let html = '';
-    dayTasks.forEach(task => {
-      const isCompleted = task.pill.toLowerCase() === 'completed' || task.pill === 'पूर्ण' || task.pill === 'ಪೂರ್ಣಗೊಂಡಿದೆ';
-      const nodeClass = isCompleted ? 'timeline-node completed' : 'timeline-node';
-
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(startOfWeek);
+      d.setDate(startOfWeek.getDate() + i);
+      const isSelected = isSameDay(d, selectedCalendarDate) ? 'active' : '';
+      const isTodayClass = isSameDay(d, new Date()) ? 'today' : '';
       html += `
-        <div class="timeline-item">
-          <div class="${nodeClass}"></div>
-          <div class="card timeline-card">
-            <div class="timeline-time">${task.time}</div>
-            <div class="timeline-title">${task.title}</div>
-            <p style="font-size:12px; margin-top:4px; color:var(--color-gray-text);">${task.desc}</p>
-            <span class="pill ${task.pillClass}" style="margin-top:6px; font-size:10px;">${task.pill}</span>
-          </div>
+        <div class="cal-day ${isSelected} ${isTodayClass}" onclick="selectCalendarDateJS('${d.toISOString()}')">
+          <span class="cal-day-name">${names[i]}</span>
+          <span class="cal-day-num">${d.getDate()}</span>
         </div>
       `;
-    });
+    }
+    strip.innerHTML = html;
+    updateCalendarHeader();
+  }
 
-    container.innerHTML = html;
+  function renderMonthView() {
+    const grid = document.getElementById('calendar-month-grid');
+    if (!grid) return;
+
+    const year = currentCalendarDate.getFullYear();
+    const month = currentCalendarDate.getMonth();
+
+    const firstDay = new Date(year, month, 1);
+    const startDay = new Date(firstDay);
+    const dayOffset = firstDay.getDay();
+    startDay.setDate(firstDay.getDate() - dayOffset);
+
+    let html = '';
+    for (let i = 0; i < 42; i++) {
+      const d = new Date(startDay);
+      d.setDate(startDay.getDate() + i);
+
+      const isCurrentMonth = d.getMonth() === month;
+      const isSelected = isSameDay(d, selectedCalendarDate) ? 'active' : '';
+      const isTodayClass = isSameDay(d, new Date()) ? 'today' : '';
+      const otherMonthClass = isCurrentMonth ? '' : 'other-month';
+
+      html += `
+        <div class="month-day ${isSelected} ${isTodayClass} ${otherMonthClass}" onclick="selectCalendarDateJS('${d.toISOString()}')">
+          <span>${d.getDate()}</span>
+        </div>
+      `;
+    }
+    grid.innerHTML = html;
+    updateCalendarHeader();
+  }
+
+  function refreshCalendarUI() {
+    if (calendarView === 'week') {
+      document.getElementById('calendar-week-container').style.display = 'flex';
+      document.getElementById('calendar-month-container').style.display = 'none';
+      renderWeekView();
+    } else {
+      document.getElementById('calendar-week-container').style.display = 'none';
+      document.getElementById('calendar-month-container').style.display = 'block';
+      renderMonthView();
+    }
+    renderCalendarTasksForDate(selectedCalendarDate);
   }
 
   // 16. Dial simulation
@@ -4400,6 +4782,83 @@
     }
   }
 
+  // Crop stage details & progress mappings
+  const cropStageInfo = {
+    sowing: { percent: 15, class: "pill-yellow", nameKey: "stage_sowing" },
+    vegetative: { percent: 40, class: "pill-blue", nameKey: "stage_vegetative" },
+    flowering: { percent: 65, class: "pill-green", nameKey: "stage_flowering" },
+    fruiting: { percent: 85, class: "pill-yellow", nameKey: "stage_fruiting" },
+    harvesting: { percent: 100, class: "pill-green", nameKey: "stage_harvesting" }
+  };
+
+  const cropIcons = {
+    tomato: "agriculture",
+    paddy: "grain",
+    ragi: "eco",
+    sugarcane: "grass",
+    maize: "corn"
+  };
+
+  function saveFarmDetails() {
+    const cropSelect = document.getElementById('profile-crop-select');
+    const stageSelect = document.getElementById('profile-stage-select');
+    
+    if (cropSelect && stageSelect) {
+      const selectedCrop = cropSelect.value;
+      const selectedStage = stageSelect.value;
+      
+      localStorage.setItem('userCrop', selectedCrop);
+      localStorage.setItem('userCropStage', selectedStage);
+      
+      updateHomeCropDisplay(selectedCrop, selectedStage);
+      alert("Farm details successfully saved and updated!");
+    }
+  }
+
+  function updateHomeCropDisplay(crop, stage) {
+    const nameEl = document.getElementById('home-crop-name');
+    const iconEl = document.getElementById('home-crop-icon');
+    const pillEl = document.getElementById('home-crop-stage-pill');
+    const percentEl = document.getElementById('home-crop-stage-percent');
+    const barEl = document.getElementById('home-crop-stage-bar');
+    
+    if (!nameEl) return;
+    
+    const lang = currentLang || 'en';
+    
+    // Set crop details
+    nameEl.setAttribute('data-i18n', `crop_${crop}`);
+    nameEl.innerText = (translations[lang] && translations[lang][`crop_${crop}`]) || crop;
+    
+    // Set icon
+    if (iconEl) iconEl.innerText = cropIcons[crop] || "agriculture";
+    
+    // Set stage details
+    const stageData = cropStageInfo[stage] || cropStageInfo.flowering;
+    pillEl.setAttribute('data-i18n', stageData.nameKey);
+    pillEl.innerText = (translations[lang] && translations[lang][stageData.nameKey]) || stage;
+    
+    // Reset pill classes and set active class
+    pillEl.className = `pill ${stageData.class}`;
+    
+    // Set progress bar
+    if (percentEl) percentEl.innerText = `${stageData.percent}%`;
+    if (barEl) barEl.style.width = `${stageData.percent}%`;
+  }
+
+  function loadFarmDetails() {
+    const storedCrop = localStorage.getItem('userCrop') || 'tomato';
+    const storedStage = localStorage.getItem('userCropStage') || 'flowering';
+    
+    const cropSelect = document.getElementById('profile-crop-select');
+    const stageSelect = document.getElementById('profile-stage-select');
+    
+    if (cropSelect) cropSelect.value = storedCrop;
+    if (stageSelect) stageSelect.value = storedStage;
+    
+    updateHomeCropDisplay(storedCrop, storedStage);
+  }
+
   // 18. Set Time on Status Bar
   function updateTime() {
     const now = new Date();
@@ -4414,8 +4873,9 @@
   setInterval(updateTime, 10000);
   updateTime();
 
-  // Render initial tasks for Tue 4
-  renderCalendarTasks(4);
+  // Initialize calendar & farm details
+  refreshCalendarUI();
+  loadFarmDetails();
 
   // Initialize interactive map and community feed lists
   renderMapPins();
