@@ -2240,15 +2240,13 @@
         <div class="chat-container">
           <div class="home-header" style="margin-bottom: 12px;">
             <div style="display:flex; align-items:center; gap:8px;">
+              <span class="material-icons-round" onclick="showScreen('screen-home')" style="cursor:pointer; color:var(--color-green-primary); font-size:24px;">arrow_back</span>
               <span class="material-icons-round" style="color:var(--color-green-primary); font-size:32px;">smart_toy</span>
               <div>
                 <h3 data-i18n="advisor_header_title" style="margin-bottom:0;">AI Farm Advisor</h3>
                 <p data-i18n="advisor_header_desc" style="font-size:11px;">Your agronomy assistant</p>
               </div>
             </div>
-            <button class="notification-btn" style="border:none;" onclick="showScreen('screen-home')">
-              <span class="material-icons-round">close</span>
-            </button>
           </div>
           
           <div class="chat-messages" id="chat-messages-box">
@@ -2297,8 +2295,11 @@
            SCREEN 6: CROP CALENDAR
            ---------------------------------------------------- -->
       <div class="screen" id="screen-calendar">
-        <h2 data-i18n="calendar_title">Crop Calendar</h2>
-        <p data-i18n="calendar_subtitle" style="margin-bottom:14px;">Smart task organizer for your farm</p>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+          <span class="material-icons-round" onclick="showScreen('screen-home')" style="cursor:pointer; color:var(--color-green-primary); font-size:24px;">arrow_back</span>
+          <h2 data-i18n="calendar_title" style="margin:0;">Crop Calendar</h2>
+        </div>
+        <p data-i18n="calendar_subtitle" style="margin-bottom:14px; margin-left:32px;">Smart task organizer for your farm</p>
 
         <!-- View Toggle and Navigation Header -->
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; gap:8px;">
@@ -2376,8 +2377,11 @@
            SCREEN 7: CLIMATE RISK DASHBOARD
            ---------------------------------------------------- -->
       <div class="screen" id="screen-risk">
-        <h2 data-i18n="risk_dash_title">Climate Risks</h2>
-        <p data-i18n="risk_dash_subtitle" style="margin-bottom:14px;">Scientific risk analysis for crop type: Tomato</p>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+          <span class="material-icons-round" onclick="showScreen('screen-home')" style="cursor:pointer; color:var(--color-green-primary); font-size:24px;">arrow_back</span>
+          <h2 data-i18n="risk_dash_title" style="margin:0;">Climate Risks</h2>
+        </div>
+        <p data-i18n="risk_dash_subtitle" style="margin-bottom:14px; margin-left:32px;">Scientific risk analysis for crop type: Tomato</p>
         
         <div class="card">
           <!-- Radar Chart Visualizer (SVG) -->
@@ -2460,8 +2464,11 @@
            SCREEN 8: DISEASE DIAGNOSIS
            ---------------------------------------------------- -->
       <div class="screen" id="screen-diagnosis">
-        <h2 data-i18n="diag_title">Crop Disease Diagnosis</h2>
-        <p data-i18n="diag_subtitle" style="margin-bottom:14px;">Instant leaf analysis using camera diagnostics</p>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+          <span class="material-icons-round" onclick="showScreen('screen-home')" style="cursor:pointer; color:var(--color-green-primary); font-size:24px;">arrow_back</span>
+          <h2 data-i18n="diag_title" style="margin:0;">Crop Disease Diagnosis</h2>
+        </div>
+        <p data-i18n="diag_subtitle" style="margin-bottom:14px; margin-left:32px;">Instant leaf analysis using camera diagnostics</p>
         
         <div class="camera-viewport" id="diag-viewport">
           <div class="scan-line" id="leaf-scan-laser"></div>
@@ -2531,8 +2538,11 @@
            SCREEN 9: CLIMATE SIMULATOR
            ---------------------------------------------------- -->
       <div class="screen" id="screen-simulator">
-        <h2 data-i18n="sim_title">Climate Simulator</h2>
-        <p data-i18n="sim_subtitle" style="margin-bottom:14px;">Simulate future crop yields based on climate adjustments</p>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+          <span class="material-icons-round" onclick="showScreen('screen-home')" style="cursor:pointer; color:var(--color-green-primary); font-size:24px;">arrow_back</span>
+          <h2 data-i18n="sim_title" style="margin:0;">Climate Simulator</h2>
+        </div>
+        <p data-i18n="sim_subtitle" style="margin-bottom:14px; margin-left:32px;">Simulate future crop yields based on climate adjustments</p>
         
         <div class="card">
           <div class="input-group">
@@ -2624,8 +2634,11 @@
            SCREEN 10: COMMUNITY MAP
            ---------------------------------------------------- -->
       <div class="screen" id="screen-community">
-        <h2 data-i18n="community_title">Community Intelligence</h2>
-        <p data-i18n="community_subtitle" style="margin-bottom:14px;">Report incidents and coordinate local safety issues</p>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+          <span class="material-icons-round" onclick="showScreen('screen-home')" style="cursor:pointer; color:var(--color-green-primary); font-size:24px;">arrow_back</span>
+          <h2 data-i18n="community_title" style="margin:0;">Community Intelligence</h2>
+        </div>
+        <p data-i18n="community_subtitle" style="margin-bottom:14px; margin-left:32px;">Report incidents and coordinate local safety issues</p>
         
         <div class="map-container">
           <!-- Stylized map overlays -->
@@ -2686,8 +2699,11 @@
            SCREEN 11: VILLAGE DASHBOARD
            ---------------------------------------------------- -->
       <div class="screen" id="screen-village">
-        <h2 data-i18n="village_dash_title">Village Dashboard</h2>
-        <p data-i18n="village_dash_subtitle" style="margin-bottom:14px;">Community cooperative analytics for Hulikere village</p>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+          <span class="material-icons-round" onclick="showScreen('screen-home')" style="cursor:pointer; color:var(--color-green-primary); font-size:24px;">arrow_back</span>
+          <h2 data-i18n="village_dash_title" style="margin:0;">Village Dashboard</h2>
+        </div>
+        <p data-i18n="village_dash_subtitle" style="margin-bottom:14px; margin-left:32px;">Community cooperative analytics for Hulikere village</p>
         
         <div class="grid-2">
           <!-- Village Climate Score -->
@@ -2730,8 +2746,11 @@
            SCREEN 12: EMERGENCY MODE
            ---------------------------------------------------- -->
       <div class="screen" id="screen-emergency">
-        <h2 data-i18n="emergency_title" style="color:var(--color-red);">Emergency Mode</h2>
-        <p data-i18n="emergency_subtitle" style="margin-bottom:14px;">One-tap SOS and disaster support coordinates</p>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+          <span class="material-icons-round" onclick="showScreen('screen-home')" style="cursor:pointer; color:var(--color-red); font-size:24px;">arrow_back</span>
+          <h2 data-i18n="emergency_title" style="margin:0; color:var(--color-red);">Emergency Mode</h2>
+        </div>
+        <p data-i18n="emergency_subtitle" style="margin-bottom:14px; margin-left:32px;">One-tap SOS and disaster support coordinates</p>
         
         <div class="sos-countdown-banner" id="sos-countdown-msg">
           <span data-i18n="sos_triggered">SOS TRIGGERED! Live location dispatched.</span>
@@ -2777,8 +2796,11 @@
            SCREEN 13: IMPACT DASHBOARD
            ---------------------------------------------------- -->
       <div class="screen" id="screen-impact">
-        <h2 data-i18n="impact_title">Impact Tracker</h2>
-        <p data-i18n="impact_subtitle" style="margin-bottom:14px;">Carbon and resources saved through resilience actions</p>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+          <span class="material-icons-round" onclick="showScreen('screen-home')" style="cursor:pointer; color:var(--color-green-primary); font-size:24px;">arrow_back</span>
+          <h2 data-i18n="impact_title" style="margin:0;">Impact Tracker</h2>
+        </div>
+        <p data-i18n="impact_subtitle" style="margin-bottom:14px; margin-left:32px;">Carbon and resources saved through resilience actions</p>
         
         <div class="grid-2">
           <div class="card text-center" style="margin-bottom:12px;">
@@ -2828,8 +2850,11 @@
            SCREEN 14: FARMER PROFILE
            ---------------------------------------------------- -->
       <div class="screen" id="screen-profile">
-        <h2 data-i18n="profile_title">Farmer Profile</h2>
-        <p data-i18n="profile_subtitle" style="margin-bottom:14px;">Personalize your platform settings</p>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+          <span class="material-icons-round" onclick="showScreen('screen-home')" style="cursor:pointer; color:var(--color-green-primary); font-size:24px;">arrow_back</span>
+          <h2 data-i18n="profile_title" style="margin:0;">Farmer Profile</h2>
+        </div>
+        <p data-i18n="profile_subtitle" style="margin-bottom:14px; margin-left:32px;">Personalize your platform settings</p>
         
         <div class="card" style="display:flex; align-items:center; gap:16px; padding:16px;">
           <div class="user-avatar" style="width:60px; height:60px; font-size:28px;">👨‍🌾</div>
